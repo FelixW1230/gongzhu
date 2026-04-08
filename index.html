@@ -727,7 +727,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getDatabase, ref, set, update, onValue, get, off } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+import { getDatabase, ref, set, update, onValue, get } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA3jRHdgq96e-MW_xZDkgW38ce78gsiACk",
@@ -830,18 +830,19 @@ function fbUpdateRoot(updates) {
 }
 
 function startListening() {
-  if (listener) off(roomRef);
+  if (listener) listener();
   roomRef = ref(db, `rooms/${roomCode}`);
   listener = onValue(roomRef, (snap) => {
     const data = snap.val();
     if (!data) return;
     loadFromData(data);
     refreshAll();
+    renderHist();
   });
 }
 
 function stopListening() {
-  if (listener && roomRef) off(roomRef);
+  if (listener) listener();
   listener = null;
   roomRef = null;
 }
@@ -935,14 +936,23 @@ async function doCreate() {
   G = freshState(players, ming, target);
   selPlayer = 0;
 
-  if (isOnline !== false || document.getElementById('setup-subtitle').textContent !== '单机模式') {
-    isOnline = true;
-    roomCode = genCode();
-    const existing = await get(ref(db, `rooms/${roomCode}`));
-    if (existing.exists()) roomCode = genCode();
-    fbWriteRoot(G);
-    startListening();
-    localStorage.setItem('gongzhu-room', roomCode);
+  const wantOnline = document.getElementById('setup-subtitle').textContent !== '单机模式';
+
+  if (wantOnline) {
+    try {
+      isOnline = true;
+      roomCode = genCode();
+      const existing = await get(ref(db, `rooms/${roomCode}`));
+      if (existing.exists()) roomCode = genCode();
+      await set(ref(db, `rooms/${roomCode}`), G);
+      startListening();
+      localStorage.setItem('gongzhu-room', roomCode);
+    } catch (e) {
+      console.error('Firebase error:', e);
+      toast('连接失败，已切换到单机模式');
+      isOnline = false;
+      roomCode = null;
+    }
   } else {
     isOnline = false;
     roomCode = null;
@@ -959,19 +969,24 @@ async function doJoin() {
     return;
   }
 
-  const snap = await get(ref(db, `rooms/${code}`));
-  if (!snap.exists()) {
-    document.getElementById('join-error').textContent = '房间不存在';
-    return;
-  }
+  try {
+    const snap = await get(ref(db, `rooms/${code}`));
+    if (!snap.exists()) {
+      document.getElementById('join-error').textContent = '房间不存在';
+      return;
+    }
 
-  roomCode = code;
-  isOnline = true;
-  loadFromData(snap.val());
-  selPlayer = 0;
-  startListening();
-  localStorage.setItem('gongzhu-room', roomCode);
-  enterGame();
+    roomCode = code;
+    isOnline = true;
+    loadFromData(snap.val());
+    selPlayer = 0;
+    startListening();
+    localStorage.setItem('gongzhu-room', roomCode);
+    enterGame();
+  } catch (e) {
+    console.error('Firebase error:', e);
+    document.getElementById('join-error').textContent = '连接失败，请重试';
+  }
 }
 
 function enterGame() {
