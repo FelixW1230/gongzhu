@@ -19,10 +19,6 @@
   --success: #70a070;
   --gold: #b09060;
   --pname: #e8e0d4;
-  --p1: #e8e0d4; --p1-bg: rgba(232,224,212,0.08);
-  --p2: #e8e0d4; --p2-bg: rgba(232,224,212,0.08);
-  --p3: #e8e0d4; --p3-bg: rgba(232,224,212,0.08);
-  --p4: #e8e0d4; --p4-bg: rgba(232,224,212,0.08);
   --heart: #ef5350;
   --spade: #e0e0e0;
   --diamond: #ef5350;
@@ -42,22 +38,94 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .screen { display: none; }
 .screen.active { display: flex; flex-direction: column; }
 
+/* ==================== HOME ==================== */
+#home-screen {
+  min-height: 100dvh;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  gap: 1.2rem;
+}
+
+.home-title { font-size: 2.5rem; font-weight: 800; color: var(--accent); }
+.home-subtitle { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 0.5rem; }
+
+.home-buttons { display: flex; flex-direction: column; gap: 0.7rem; width: 100%; max-width: 300px; }
+
+.btn-home {
+  padding: 0.85rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: transform 0.15s;
+  text-align: center;
+}
+
+.btn-home:active { transform: scale(0.96); }
+
+.btn-home-primary {
+  background: linear-gradient(135deg, #e8e0d4, #a09888);
+  color: #111;
+  box-shadow: 0 4px 12px rgba(232,224,212,0.12);
+}
+
+.btn-home-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+/* ==================== JOIN ==================== */
+#join-screen {
+  min-height: 100dvh;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  gap: 1.2rem;
+}
+
+.join-title { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+
+.code-input {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 0.9rem 1.2rem;
+  color: var(--text);
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 0.5em;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+  width: 220px;
+  transition: border-color 0.2s;
+}
+
+.code-input:focus { border-color: var(--accent); }
+.code-input::placeholder { letter-spacing: 0.2em; font-size: 1rem; color: var(--text-dim); }
+
+.join-error { color: var(--danger); font-size: 0.85rem; min-height: 1.2em; }
+
+.btn-back {
+  background: none;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+
 /* ==================== SETUP ==================== */
 #setup-screen {
   min-height: 100dvh;
   align-items: center;
   justify-content: center;
   padding: 2rem 1.5rem;
-  gap: 1.5rem;
+  gap: 1.2rem;
 }
 
-.setup-title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: var(--accent);
-}
-
-.setup-subtitle { color: var(--text-dim); font-size: 0.9rem; }
+.setup-subtitle { color: var(--text-dim); font-size: 0.85rem; }
 
 .setup-section {
   width: 100%;
@@ -68,25 +136,22 @@ button { cursor: pointer; border: none; font-family: inherit; }
 }
 
 .setup-section-title {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
-.player-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-
-.player-input-group { display: flex; flex-direction: column; gap: 0.3rem; }
-
-.player-input-group label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; }
-.player-input-group label { color: var(--pname); }
+.player-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+.player-input-group { display: flex; flex-direction: column; gap: 0.25rem; }
+.player-input-group label { font-size: 0.7rem; font-weight: 700; color: var(--pname); letter-spacing: 0.04em; }
 
 .setup-input {
   background: var(--surface);
   border: 2px solid var(--border);
   border-radius: 10px;
-  padding: 0.65rem 0.8rem;
+  padding: 0.6rem 0.8rem;
   color: var(--text);
   font-size: 1rem;
   font-weight: 600;
@@ -104,10 +169,10 @@ button { cursor: pointer; border: none; font-family: inherit; }
   background: var(--surface);
   border: 2px solid var(--border);
   border-radius: 10px;
-  padding: 0.65rem 0.8rem;
+  padding: 0.6rem 0.8rem;
 }
 
-.setup-row-label { font-size: 0.95rem; font-weight: 600; }
+.setup-row-label { font-size: 0.9rem; font-weight: 600; }
 
 .toggle-track {
   width: 44px;
@@ -135,30 +200,42 @@ button { cursor: pointer; border: none; font-family: inherit; }
 
 .toggle-track.on .toggle-knob { left: 22px; }
 
-.setup-score-row {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.setup-score-row .setup-input { flex: 1; }
-
 .btn-start {
   background: linear-gradient(135deg, #e8e0d4, #a09888);
   color: #111;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  padding: 0.85rem 3rem;
+  padding: 0.8rem 3rem;
   border-radius: 14px;
   transition: transform 0.15s;
-  box-shadow: 0 4px 15px rgba(232,224,212,0.15);
-  margin-top: 0.5rem;
+  box-shadow: 0 4px 12px rgba(232,224,212,0.12);
+  margin-top: 0.3rem;
 }
 
 .btn-start:active { transform: scale(0.96); }
 
 /* ==================== GAME ==================== */
 #game-screen { min-height: 100dvh; padding-bottom: 2rem; }
+
+/* Room code bar */
+.room-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.4rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.room-code {
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+}
 
 /* Scoreboard */
 .scoreboard {
@@ -180,33 +257,31 @@ button { cursor: pointer; border: none; font-family: inherit; }
   user-select: none;
 }
 
-.score-cell.selected { border-bottom-color: currentColor; }
 .score-cell.selected { background: rgba(232,224,212,0.08); border-bottom-color: var(--accent); }
 
 .score-cell .pname {
   font-size: 0.75rem;
   font-weight: 700;
+  color: var(--pname);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-.score-cell .pname { color: var(--pname); }
 
 .score-cell .total { font-size: 1.3rem; font-weight: 800; font-variant-numeric: tabular-nums; }
 .score-cell .preview { font-size: 0.7rem; font-variant-numeric: tabular-nums; min-height: 1em; color: var(--text-dim); }
 .spos { color: var(--success) !important; }
 .sneg { color: var(--danger) !important; }
 
-/* Instruction */
 .instruction {
   text-align: center;
-  padding: 0.55rem 1rem;
-  font-size: 0.8rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
   color: var(--text-dim);
   background: var(--surface);
   border-bottom: 1px solid var(--border);
 }
+
 .instruction strong { color: var(--accent); }
 
 .round-indicator {
@@ -253,7 +328,6 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .card-btn .cs { font-size: 0.9rem; line-height: 1; }
 .card-btn .cr { font-size: 1rem; font-weight: 800; line-height: 1.1; }
 .card-btn .cv { font-size: 0.5rem; color: var(--text-dim); font-weight: 600; position: absolute; bottom: 2px; }
-
 .card-btn.no-value .cv { display: none; }
 
 .suit-h .cs, .suit-h .cr { color: var(--heart); }
@@ -287,7 +361,15 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .card-btn.a2::after { background: #70a070; }
 .card-btn.a3::after { background: #b09060; }
 
-/* Expose toggles */
+@keyframes card-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(200,191,180,0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(200,191,180,0); }
+  100% { box-shadow: 0 0 0 0 rgba(200,191,180,0); }
+}
+
+.card-btn.pulse { animation: card-pulse 0.4s ease-out; }
+
+/* Expose */
 .expose-area { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; padding: 0 0.5rem; }
 
 .expose-btn {
@@ -369,35 +451,6 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .chart-legend-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.7rem; font-weight: 600; }
 .chart-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
 
-/* Stats */
-.stats-section { padding: 0 1rem; }
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.5rem;
-}
-
-.stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.5rem;
-  text-align: center;
-}
-
-.stat-card .stat-name {
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: var(--text-dim);
-  margin-bottom: 0.2rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.stat-card .stat-val { font-size: 1.3rem; font-weight: 800; }
-
 /* History */
 .collapsible-section { padding: 0 1rem; margin-top: 0.5rem; }
 
@@ -417,7 +470,6 @@ button { cursor: pointer; border: none; font-family: inherit; }
 
 .collapse-toggle .arr { transition: transform 0.2s; font-size: 0.7rem; }
 .collapse-toggle.open .arr { transform: rotate(180deg); }
-
 .collapse-body { display: none; flex-direction: column; gap: 0.3rem; margin-top: 0.4rem; }
 .collapse-body.open { display: flex; }
 
@@ -432,10 +484,8 @@ button { cursor: pointer; border: none; font-family: inherit; }
 }
 
 .hist-label { font-size: 0.75rem; font-weight: 700; color: var(--text-dim); min-width: 42px; }
-
 .hist-scores { display: flex; flex: 1; justify-content: space-around; }
 .hist-s { font-size: 0.8rem; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 40px; text-align: center; }
-
 .hist-tags { display: flex; gap: 0.2rem; }
 .hist-tag { font-size: 0.55rem; font-weight: 700; padding: 1px 4px; border-radius: 3px; }
 .hist-tag-qh { background: rgba(192,112,112,0.2); color: var(--danger); }
@@ -496,7 +546,6 @@ button { cursor: pointer; border: none; font-family: inherit; }
 }
 
 .overlay-title { font-size: 1.5rem; font-weight: 800; color: var(--gold); }
-
 .overlay-standings { display: flex; flex-direction: column; gap: 0.4rem; }
 
 .standing-row {
@@ -511,7 +560,6 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .standing-rank { font-size: 0.8rem; font-weight: 800; color: var(--text-dim); width: 24px; }
 .standing-name { font-size: 1rem; font-weight: 700; flex: 1; text-align: left; margin-left: 0.3rem; }
 .standing-score { font-size: 1.1rem; font-weight: 800; font-variant-numeric: tabular-nums; }
-
 .standing-row:first-child { border: 1px solid var(--gold); }
 .standing-row:first-child .standing-rank { color: var(--gold); }
 
@@ -554,7 +602,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
 }
 
 @media (min-width: 700px) {
-  .card-area, .actions, .chart-section, .stats-section, .collapsible-section, .footer {
+  .card-area, .actions, .collapsible-section, .footer {
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
@@ -564,11 +612,30 @@ button { cursor: pointer; border: none; font-family: inherit; }
 </head>
 <body>
 
-<!-- ===== SETUP ===== -->
-<div id="setup-screen" class="screen active">
-  <div class="setup-title">拱猪计分器</div>
-  <div class="setup-subtitle">设置游戏参数</div>
+<!-- ===== HOME ===== -->
+<div id="home-screen" class="screen active">
+  <div class="home-title">拱猪计分器</div>
+  <div class="home-subtitle">选择游戏模式</div>
+  <div class="home-buttons">
+    <button class="btn-home btn-home-primary" onclick="goCreate()">创建房间</button>
+    <button class="btn-home btn-home-secondary" onclick="goJoin()">加入房间</button>
+    <button class="btn-home btn-home-secondary" onclick="goLocal()">单机模式</button>
+  </div>
+</div>
 
+<!-- ===== JOIN ===== -->
+<div id="join-screen" class="screen">
+  <div class="join-title">输入房间代码</div>
+  <input class="code-input" id="inp-code" type="text" maxlength="4" placeholder="XXXX" autocomplete="off">
+  <div class="join-error" id="join-error"></div>
+  <button class="btn-home btn-home-primary" style="width:220px" onclick="doJoin()">加入</button>
+  <button class="btn-back" onclick="goHome()">← 返回</button>
+</div>
+
+<!-- ===== SETUP ===== -->
+<div id="setup-screen" class="screen">
+  <div class="home-title" style="font-size:1.5rem">创建游戏</div>
+  <div class="setup-subtitle" id="setup-subtitle"></div>
   <div class="setup-section">
     <div class="setup-section-title">玩家名字</div>
     <div class="player-inputs">
@@ -578,12 +645,11 @@ button { cursor: pointer; border: none; font-family: inherit; }
       <div class="player-input-group"><label>玩家 4</label><input class="setup-input" id="inp-n3" placeholder="北" maxlength="6"></div>
     </div>
   </div>
-
   <div class="setup-section">
     <div class="setup-section-title">规则设置</div>
     <div class="setup-row">
       <span class="setup-row-label">允许明牌</span>
-      <div class="toggle-track on" id="tog-ming" onclick="toggleSetupMing()">
+      <div class="toggle-track on" id="tog-ming" onclick="toggleMing()">
         <div class="toggle-knob"></div>
       </div>
     </div>
@@ -592,27 +658,27 @@ button { cursor: pointer; border: none; font-family: inherit; }
       <input class="setup-input" id="inp-target" type="number" value="2000" min="100" step="100" style="width:100px;text-align:center;margin-left:auto">
     </div>
   </div>
-
-  <button class="btn-start" onclick="startGame()">开始计分</button>
+  <button class="btn-start" onclick="doCreate()">开始</button>
+  <button class="btn-back" onclick="goHome()">← 返回</button>
 </div>
 
 <!-- ===== GAME ===== -->
 <div id="game-screen" class="screen">
+  <div class="room-bar" id="room-bar" style="display:none">
+    <span>房间</span><span class="room-code" id="room-code-display"></span>
+  </div>
+
   <div class="scoreboard" id="scoreboard"></div>
 
-  <div class="instruction">
-    选中 <strong>玩家</strong>，再点 <strong>牌</strong> 进行分配
-  </div>
+  <div class="instruction">选中 <strong>玩家</strong>，再点 <strong>牌</strong> 进行分配</div>
 
   <div class="round-indicator" id="round-ind">第 1 轮</div>
 
   <div class="card-area">
     <div class="card-group-label"><span style="color:var(--heart)">♥</span> 红心</div>
     <div class="card-grid" id="grid-hearts"></div>
-
     <div class="card-group-label" style="margin-top:0.2rem">特殊牌</div>
     <div class="card-grid" id="grid-specials"></div>
-
     <div id="expose-section" style="margin-top:0.2rem">
       <div class="card-group-label">亮牌（明）</div>
       <div class="expose-area" id="expose-area"></div>
@@ -626,10 +692,9 @@ button { cursor: pointer; border: none; font-family: inherit; }
 
   <div class="actions">
     <button class="btn-a btn-secondary" onclick="resetRound()">清空</button>
-    <button class="btn-a btn-confirm" id="btn-ok" onclick="confirmRound()">确认本轮</button>
+    <button class="btn-a btn-confirm" id="btn-ok" onclick="confirmRound()" disabled>确认本轮</button>
     <button class="btn-a btn-secondary" id="btn-undo" onclick="undoLast()" style="display:none">撤销</button>
   </div>
-
 
   <div class="collapsible-section">
     <button class="collapse-toggle" id="hist-tog" onclick="toggleHist()">
@@ -639,7 +704,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
   </div>
 
   <div class="footer">
-    <button class="btn-footer" onclick="newGame()">新游戏</button>
+    <button class="btn-footer" onclick="leaveGame()">离开</button>
   </div>
 </div>
 
@@ -648,21 +713,38 @@ button { cursor: pointer; border: none; font-family: inherit; }
   <div class="overlay-card">
     <div class="overlay-title">游戏结束</div>
     <div class="overlay-standings" id="go-standings"></div>
-    <div class="chart-container" id="go-chart-container" style="margin-top:0.5rem">
+    <div class="chart-container" style="margin-top:0.5rem">
       <canvas id="chart-canvas" height="200"></canvas>
       <div class="chart-legend" id="chart-legend"></div>
     </div>
     <div class="overlay-stats" id="go-stats"></div>
     <button class="btn-overlay" onclick="closeGameOver()">继续查看</button>
-    <button class="btn-footer" onclick="closeGameOver();newGame();" style="align-self:center">新游戏</button>
+    <button class="btn-footer" onclick="closeGameOver();leaveGame();" style="align-self:center">离开房间</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getDatabase, ref, set, update, onValue, get, off } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA3jRHdgq96e-MW_xZDkgW38ce78gsiACk",
+  authDomain: "gongzhu.firebaseapp.com",
+  databaseURL: "https://gongzhu-default-rtdb.firebaseio.com",
+  projectId: "gongzhu",
+  storageBucket: "gongzhu.firebasestorage.app",
+  messagingSenderId: "420229380870",
+  appId: "1:420229380870:web:b3a006205941124f5e3c87",
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getDatabase(fbApp);
+
 const P_COLORS = ['#c07070','#7090b0','#70a070','#b09060'];
 const DEFAULTS = ['东','南','西','北'];
+const UNASSIGNED = -1;
 
 const HEARTS = [
   {id:'hA',  rank:'A',  val:-50},
@@ -681,9 +763,9 @@ const HEARTS = [
 ];
 
 const SPECIALS = [
-  {id:'sQ',  suit:'♠', rank:'Q',  suitCls:'suit-s', label:'猪',   baseVal:-100},
-  {id:'dJ',  suit:'♦', rank:'J',  suitCls:'suit-d', label:'羊',   baseVal:+100},
-  {id:'c10', suit:'♣', rank:'10', suitCls:'suit-c', label:'变压器', baseVal:0},
+  {id:'sQ',  suit:'♠', rank:'Q',  suitCls:'suit-s', baseVal:-100},
+  {id:'dJ',  suit:'♦', rank:'J',  suitCls:'suit-d', baseVal:+100},
+  {id:'c10', suit:'♣', rank:'10', suitCls:'suit-c', baseVal:0},
 ];
 
 const EXPOSE_DEF = [
@@ -693,62 +775,234 @@ const EXPOSE_DEF = [
   {id:'c10', label:'♣10 变压器'},
 ];
 
-const ALL_CARD_IDS = HEARTS.map(c=>c.id).concat(SPECIALS.map(c=>c.id));
+const ALL_IDS = HEARTS.map(c=>c.id).concat(SPECIALS.map(c=>c.id));
 
-let G = {
-  players: [],
-  mingEnabled: true,
-  targetScore: 2000,
-  totals: [0,0,0,0],
-  pigCounts: [0,0,0,0],
-  sheepCounts: [0,0,0,0],
-  transCounts: [0,0,0,0],
-  rounds: [],
-  assign: {},
-  exposed: {},
-  selPlayer: 0,
-  roundNum: 1,
-  gameOver: false,
-};
+let G = {};
+let roomCode = null;
+let roomRef = null;
+let listener = null;
+let isOnline = false;
+let selPlayer = 0;
 
-/* ========== Setup ========== */
-function toggleSetupMing() {
+function freshState(players, ming, target) {
+  const assign = {};
+  ALL_IDS.forEach(id => assign[id] = UNASSIGNED);
+  const exposed = {};
+  EXPOSE_DEF.forEach(e => exposed[e.id] = false);
+  return {
+    players: players,
+    mingEnabled: ming,
+    targetScore: target,
+    totals: [0,0,0,0],
+    pigCounts: [0,0,0,0],
+    sheepCounts: [0,0,0,0],
+    transCounts: [0,0,0,0],
+    rounds: [],
+    roundNum: 1,
+    gameOver: false,
+    currentRound: { assign, exposed },
+  };
+}
+
+function blankRound() {
+  const assign = {};
+  ALL_IDS.forEach(id => assign[id] = UNASSIGNED);
+  const exposed = {};
+  EXPOSE_DEF.forEach(e => exposed[e.id] = false);
+  return { assign, exposed };
+}
+
+function a(id) { return G.currentRound.assign[id]; }
+function aVal(id) { const v = G.currentRound.assign[id]; return v === UNASSIGNED ? null : v; }
+function isAssigned(id) { return G.currentRound.assign[id] !== UNASSIGNED; }
+
+/* ========== Firebase Helpers ========== */
+function fbWrite(path, value) {
+  if (isOnline && roomCode) set(ref(db, `rooms/${roomCode}/${path}`), value);
+}
+
+function fbWriteRoot(data) {
+  if (isOnline && roomCode) set(ref(db, `rooms/${roomCode}`), data);
+}
+
+function fbUpdateRoot(updates) {
+  if (isOnline && roomCode) update(ref(db, `rooms/${roomCode}`), updates);
+}
+
+function startListening() {
+  if (listener) off(roomRef);
+  roomRef = ref(db, `rooms/${roomCode}`);
+  listener = onValue(roomRef, (snap) => {
+    const data = snap.val();
+    if (!data) return;
+    loadFromData(data);
+    refreshAll();
+  });
+}
+
+function stopListening() {
+  if (listener && roomRef) off(roomRef);
+  listener = null;
+  roomRef = null;
+}
+
+function loadFromData(data) {
+  G.players = data.players || DEFAULTS;
+  G.mingEnabled = data.mingEnabled ?? true;
+  G.targetScore = data.targetScore ?? 2000;
+  G.totals = toArr4(data.totals);
+  G.pigCounts = toArr4(data.pigCounts);
+  G.sheepCounts = toArr4(data.sheepCounts);
+  G.transCounts = toArr4(data.transCounts);
+  G.rounds = data.rounds ? (Array.isArray(data.rounds) ? data.rounds : Object.values(data.rounds)) : [];
+  G.roundNum = data.roundNum || G.rounds.length + 1;
+  G.gameOver = data.gameOver || false;
+
+  if (data.currentRound) {
+    G.currentRound = {
+      assign: {},
+      exposed: {},
+    };
+    ALL_IDS.forEach(id => {
+      G.currentRound.assign[id] = data.currentRound.assign && data.currentRound.assign[id] !== undefined
+        ? data.currentRound.assign[id] : UNASSIGNED;
+    });
+    EXPOSE_DEF.forEach(e => {
+      G.currentRound.exposed[e.id] = data.currentRound.exposed ? !!data.currentRound.exposed[e.id] : false;
+    });
+  } else {
+    G.currentRound = blankRound();
+  }
+}
+
+function toArr4(v) {
+  if (Array.isArray(v) && v.length === 4) return v;
+  if (v && typeof v === 'object') { const a = [0,0,0,0]; for (let i=0;i<4;i++) a[i]=v[i]||0; return a; }
+  return [0,0,0,0];
+}
+
+function genCode() {
+  const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  let code = '';
+  for (let i = 0; i < 4; i++) code += c[Math.floor(Math.random() * c.length)];
+  return code;
+}
+
+/* ========== Navigation ========== */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() { showScreen('home-screen'); }
+
+function goCreate() {
+  document.getElementById('setup-subtitle').textContent = '';
+  showScreen('setup-screen');
+}
+
+function goJoin() {
+  document.getElementById('inp-code').value = '';
+  document.getElementById('join-error').textContent = '';
+  showScreen('join-screen');
+  document.getElementById('inp-code').focus();
+}
+
+function goLocal() {
+  isOnline = false;
+  roomCode = null;
+  document.getElementById('setup-subtitle').textContent = '单机模式';
+  showScreen('setup-screen');
+}
+
+/* ========== Setup & Room Management ========== */
+function toggleMing() {
   const el = document.getElementById('tog-ming');
   const on = !el.classList.contains('on');
   el.classList.toggle('on', on);
   document.getElementById('inp-target').value = on ? 2000 : 1000;
 }
 
-function startGame() {
-  G.players = [0,1,2,3].map(i => document.getElementById(`inp-n${i}`).value.trim() || DEFAULTS[i]);
-  G.mingEnabled = document.getElementById('tog-ming').classList.contains('on');
-  G.targetScore = Math.abs(parseInt(document.getElementById('inp-target').value)) || 1000;
-  G.totals = [0,0,0,0];
-  G.pigCounts = [0,0,0,0];
-  G.sheepCounts = [0,0,0,0];
-  G.transCounts = [0,0,0,0];
-  G.rounds = [];
-  G.roundNum = 1;
-  G.selPlayer = 0;
-  G.gameOver = false;
-  clearAssign();
-  showScreen('game-screen');
-  buildAll();
-  save();
+function readSetup() {
+  const players = [0,1,2,3].map(i => document.getElementById(`inp-n${i}`).value.trim() || DEFAULTS[i]);
+  const ming = document.getElementById('tog-ming').classList.contains('on');
+  const target = Math.abs(parseInt(document.getElementById('inp-target').value)) || 1000;
+  return { players, ming, target };
 }
 
-/* ========== Build UI ========== */
-function buildAll() {
+async function doCreate() {
+  const { players, ming, target } = readSetup();
+  G = freshState(players, ming, target);
+  selPlayer = 0;
+
+  if (isOnline !== false || document.getElementById('setup-subtitle').textContent !== '单机模式') {
+    isOnline = true;
+    roomCode = genCode();
+    const existing = await get(ref(db, `rooms/${roomCode}`));
+    if (existing.exists()) roomCode = genCode();
+    fbWriteRoot(G);
+    startListening();
+    localStorage.setItem('gongzhu-room', roomCode);
+  } else {
+    isOnline = false;
+    roomCode = null;
+    localStorage.removeItem('gongzhu-room');
+  }
+
+  enterGame();
+}
+
+async function doJoin() {
+  const code = document.getElementById('inp-code').value.trim().toUpperCase();
+  if (code.length !== 4) {
+    document.getElementById('join-error').textContent = '请输入4位房间代码';
+    return;
+  }
+
+  const snap = await get(ref(db, `rooms/${code}`));
+  if (!snap.exists()) {
+    document.getElementById('join-error').textContent = '房间不存在';
+    return;
+  }
+
+  roomCode = code;
+  isOnline = true;
+  loadFromData(snap.val());
+  selPlayer = 0;
+  startListening();
+  localStorage.setItem('gongzhu-room', roomCode);
+  enterGame();
+}
+
+function enterGame() {
+  showScreen('game-screen');
+  const bar = document.getElementById('room-bar');
+  if (isOnline) {
+    bar.style.display = '';
+    document.getElementById('room-code-display').textContent = roomCode;
+  } else {
+    bar.style.display = 'none';
+  }
   buildScoreboard();
   buildCards();
   buildExpose();
   renderHist();
-  update();
+  refreshAll();
 }
 
+function leaveGame() {
+  if (G.rounds && G.rounds.length > 0 && !confirm('确定离开？')) return;
+  stopListening();
+  isOnline = false;
+  roomCode = null;
+  localStorage.removeItem('gongzhu-room');
+  goHome();
+}
+
+/* ========== Build UI ========== */
 function buildScoreboard() {
   document.getElementById('scoreboard').innerHTML = G.players.map((n,i) =>
-    `<div class="score-cell${i===0?' selected':''}" data-p="${i}" onclick="selP(${i})">
+    `<div class="score-cell${i===0?' selected':''}" data-p="${i}" onclick="window._selP(${i})">
       <div class="pname">${esc(n)}</div>
       <div class="total" id="tot-${i}">0</div>
       <div class="preview" id="pre-${i}"></div>
@@ -758,13 +1012,13 @@ function buildScoreboard() {
 
 function buildCards() {
   document.getElementById('grid-hearts').innerHTML = HEARTS.map(c =>
-    `<button class="card-btn suit-h${c.val===0?' no-value':''}" data-c="${c.id}" onclick="tap('${c.id}')">
+    `<button class="card-btn suit-h${c.val===0?' no-value':''}" data-c="${c.id}" onclick="window._tap('${c.id}')">
       <span class="cs">♥</span><span class="cr">${c.rank}</span><span class="cv">${c.val}</span>
     </button>`
   ).join('');
 
   document.getElementById('grid-specials').innerHTML = SPECIALS.map(c =>
-    `<button class="card-btn ${c.suitCls}" data-c="${c.id}" onclick="tap('${c.id}')">
+    `<button class="card-btn ${c.suitCls}" data-c="${c.id}" onclick="window._tap('${c.id}')">
       <span class="cs">${c.suit}</span><span class="cr">${c.rank}</span>
       <span class="cv">${c.id==='c10'?'×2':((c.baseVal>0?'+':'')+c.baseVal)}</span>
     </button>`
@@ -776,47 +1030,44 @@ function buildExpose() {
   if (!G.mingEnabled) { sec.style.display = 'none'; return; }
   sec.style.display = '';
   document.getElementById('expose-area').innerHTML = EXPOSE_DEF.map(e =>
-    `<button class="expose-btn" data-e="${e.id}" onclick="togExp('${e.id}')">
+    `<button class="expose-btn" data-e="${e.id}" onclick="window._togExp('${e.id}')">
       <span class="el">明</span> ${e.label}
     </button>`
   ).join('');
 }
 
-
 /* ========== Interactions ========== */
-function selP(i) {
-  G.selPlayer = i;
+function _selP(i) {
+  selPlayer = i;
   document.querySelectorAll('.score-cell').forEach((el,j) => el.classList.toggle('selected', j===i));
 }
 
-function tap(id) {
-  G.assign[id] = G.assign[id] === G.selPlayer ? null : G.selPlayer;
-  update();
+function _tap(id) {
+  const cur = G.currentRound.assign[id];
+  const newVal = cur === selPlayer ? UNASSIGNED : selPlayer;
+  G.currentRound.assign[id] = newVal;
+  fbWrite(`currentRound/assign/${id}`, newVal);
+  refreshAll();
 }
 
-function togExp(id) {
-  G.exposed[id] = !G.exposed[id];
-  update();
-}
-
-function clearAssign() {
-  G.assign = {};
-  G.exposed = {};
-  ALL_CARD_IDS.forEach(id => G.assign[id] = null);
-  EXPOSE_DEF.forEach(e => G.exposed[e.id] = false);
+function _togExp(id) {
+  const newVal = !G.currentRound.exposed[id];
+  G.currentRound.exposed[id] = newVal;
+  fbWrite(`currentRound/exposed/${id}`, newVal);
+  refreshAll();
 }
 
 /* ========== Scoring Engine ========== */
 function calcScores(assign, exposed) {
   const scores = [0,0,0,0];
-  const heartIds = HEARTS.map(c => c.id);
+  const get = id => assign[id] === UNASSIGNED ? null : assign[id];
 
-  // Check special outcomes
-  const assignedAll = ALL_CARD_IDS.every(id => assign[id] !== null);
-  const onePlayerAll = assignedAll && new Set(ALL_CARD_IDS.map(id => assign[id])).size === 1;
-  const heartsAssigned = heartIds.filter(id => assign[id] !== null);
+  const heartIds = HEARTS.map(c => c.id);
+  const allAssignedAll = ALL_IDS.every(id => get(id) !== null);
+  const onePlayerAll = allAssignedAll && new Set(ALL_IDS.map(id => get(id))).size === 1;
+  const heartsAssigned = heartIds.filter(id => get(id) !== null);
   const allHearts = heartsAssigned.length === HEARTS.length;
-  const onePlayerHearts = allHearts && new Set(heartsAssigned.map(id => assign[id])).size === 1;
+  const onePlayerHearts = allHearts && new Set(heartsAssigned.map(id => get(id))).size === 1;
 
   const heartMult = exposed.hA ? 2 : 1;
   const pigMult = exposed.sQ ? 2 : 1;
@@ -824,12 +1075,9 @@ function calcScores(assign, exposed) {
   const transMult = exposed.c10 ? 4 : 2;
 
   if (onePlayerAll) {
-    // 猪羊满圈
-    const p = assign[ALL_CARD_IDS[0]];
+    const p = get(ALL_IDS[0]);
     let negSum = 0;
-    for (const c of HEARTS) {
-      if (c.val < 0) negSum += c.val * heartMult;
-    }
+    for (const c of HEARTS) { if (c.val < 0) negSum += c.val * heartMult; }
     negSum += -100 * pigMult;
     const flipped = -negSum;
     const withSheep = flipped + 100 * sheepMult;
@@ -837,29 +1085,25 @@ function calcScores(assign, exposed) {
     return scores;
   }
 
-  // Heart scoring
-  const isQuanHong = onePlayerHearts;
+  const isQH = onePlayerHearts;
   for (const c of HEARTS) {
-    const p = assign[c.id];
+    const p = get(c.id);
     if (p === null) continue;
     let v = c.val * heartMult;
-    if (isQuanHong) v = -v;
+    if (isQH) v = -v;
     scores[p] += v;
   }
 
-  // Pig
-  const pigP = assign.sQ;
+  const pigP = get('sQ');
   if (pigP !== null) scores[pigP] += -100 * pigMult;
 
-  // Sheep
-  const sheepP = assign.dJ;
+  const sheepP = get('dJ');
   if (sheepP !== null) scores[sheepP] += 100 * sheepMult;
 
-  // Transformer: +50 only if player has NO other scoring cards, otherwise multiply
-  const transP = assign.c10;
+  const transP = get('c10');
   if (transP !== null) {
-    const hasOtherCards = ALL_CARD_IDS.some(id => id !== 'c10' && assign[id] === transP);
-    if (!hasOtherCards) {
+    const hasOther = ALL_IDS.some(id => id !== 'c10' && get(id) === transP);
+    if (!hasOther) {
       scores[transP] = 50 * (exposed.c10 ? 2 : 1);
     } else {
       scores[transP] *= transMult;
@@ -870,43 +1114,46 @@ function calcScores(assign, exposed) {
 }
 
 function detectOutcome(assign) {
-  const heartIds = HEARTS.map(c => c.id);
-  const assignedAll = ALL_CARD_IDS.every(id => assign[id] !== null);
-  const onePlayerAll = assignedAll && new Set(ALL_CARD_IDS.map(id => assign[id])).size === 1;
-  if (onePlayerAll) return 'zymq';
+  const get = id => assign[id] === UNASSIGNED ? null : assign[id];
+  const allAssignedAll = ALL_IDS.every(id => get(id) !== null);
+  if (allAssignedAll && new Set(ALL_IDS.map(id => get(id))).size === 1) return 'zymq';
 
-  const ha = heartIds.filter(id => assign[id] !== null);
-  if (ha.length === HEARTS.length && new Set(ha.map(id => assign[id])).size === 1) return 'qh';
+  const heartIds = HEARTS.map(c => c.id);
+  const ha = heartIds.filter(id => get(id) !== null);
+  if (ha.length === HEARTS.length && new Set(ha.map(id => get(id))).size === 1) return 'qh';
 
   return null;
 }
 
-/* ========== Update UI ========== */
-function update() {
-  const scores = calcScores(G.assign, G.exposed);
-  const any = Object.values(G.assign).some(v => v !== null);
+/* ========== Refresh UI ========== */
+function refreshAll() {
+  const assign = G.currentRound.assign;
+  const exposed = G.currentRound.exposed;
+  const scores = calcScores(assign, exposed);
+  const anyAssigned = ALL_IDS.some(id => assign[id] !== UNASSIGNED);
+  const allAssigned = ALL_IDS.every(id => assign[id] !== UNASSIGNED);
 
   for (let i = 0; i < 4; i++) {
     const tEl = document.getElementById(`tot-${i}`);
     const pEl = document.getElementById(`pre-${i}`);
+    if (!tEl) continue;
     tEl.textContent = G.totals[i];
     tEl.className = 'total' + sc(G.totals[i]);
 
-    if (any) {
+    if (anyAssigned) {
       pEl.textContent = (scores[i]>0?'+':'') + scores[i];
       pEl.className = 'preview' + sc(scores[i]);
     } else {
       pEl.textContent = '';
       pEl.className = 'preview';
     }
-
   }
 
   document.querySelectorAll('.card-btn').forEach(el => {
     const id = el.dataset.c;
-    const p = G.assign[id];
+    const p = assign[id];
     el.classList.remove('a0','a1','a2','a3');
-    if (p !== null && p !== undefined) {
+    if (p !== UNASSIGNED && p !== undefined) {
       el.classList.add('a'+p);
       el.dataset.pl = G.players[p];
     } else {
@@ -916,93 +1163,162 @@ function update() {
 
   if (G.mingEnabled) {
     document.querySelectorAll('.expose-btn').forEach(el => {
-      el.classList.toggle('active', !!G.exposed[el.dataset.e]);
+      el.classList.toggle('active', !!exposed[el.dataset.e]);
     });
   }
 
-  const outcome = detectOutcome(G.assign);
+  const outcome = detectOutcome(assign);
   document.getElementById('b-qh').classList.toggle('on', outcome === 'qh');
   document.getElementById('b-zymq').classList.toggle('on', outcome === 'zymq');
   document.getElementById('round-ind').textContent = `第 ${G.roundNum} 轮`;
   document.getElementById('btn-undo').style.display = G.rounds.length > 0 ? '' : 'none';
+
+  const btnOk = document.getElementById('btn-ok');
+  btnOk.disabled = !allAssigned;
+
+  if (G.gameOver && !document.getElementById('gameover-overlay').classList.contains('open')) {
+    showGameOver();
+  }
 }
 
 /* ========== Round Management ========== */
 function confirmRound() {
   if (G.gameOver) return;
-  const any = Object.values(G.assign).some(v => v !== null);
-  if (!any) { toast('请先分配至少一张牌'); return; }
+  const allAssigned = ALL_IDS.every(id => G.currentRound.assign[id] !== UNASSIGNED);
+  if (!allAssigned) { toast('请分配所有牌'); return; }
 
-  const scores = calcScores(G.assign, G.exposed);
-  const outcome = detectOutcome(G.assign);
+  const scores = calcScores(G.currentRound.assign, G.currentRound.exposed);
+  const outcome = detectOutcome(G.currentRound.assign);
 
-  if (G.assign.sQ !== null) G.pigCounts[G.assign.sQ]++;
-  if (G.assign.dJ !== null) G.sheepCounts[G.assign.dJ]++;
-  if (G.assign.c10 !== null) G.transCounts[G.assign.c10]++;
+  const newPig = [...G.pigCounts];
+  const newSheep = [...G.sheepCounts];
+  const newTrans = [...G.transCounts];
+  const sQ = aVal('sQ'), dJ = aVal('dJ'), c10 = aVal('c10');
+  if (sQ !== null) newPig[sQ]++;
+  if (dJ !== null) newSheep[dJ]++;
+  if (c10 !== null) newTrans[c10]++;
 
-  G.rounds.push({
-    assign: {...G.assign},
-    exposed: {...G.exposed},
+  const newTotals = G.totals.map((t, i) => t + scores[i]);
+  const newRounds = [...G.rounds, {
+    assign: {...G.currentRound.assign},
+    exposed: {...G.currentRound.exposed},
     scores: [...scores],
     outcome,
-  });
+  }];
 
-  for (let i = 0; i < 4; i++) G.totals[i] += scores[i];
+  const updates = {
+    totals: newTotals,
+    pigCounts: newPig,
+    sheepCounts: newSheep,
+    transCounts: newTrans,
+    rounds: newRounds,
+    roundNum: G.roundNum + 1,
+    gameOver: newTotals.some(t => t <= -G.targetScore),
+    currentRound: blankRound(),
+  };
 
-  G.roundNum++;
-  clearAssign();
-  update();
-  renderHist();
-  save();
-  toast('本轮计分完成');
-
-  // Check game over
-  const loser = G.totals.findIndex(t => t <= -G.targetScore);
-  if (loser !== -1) {
-    G.gameOver = true;
-    save();
-    setTimeout(() => showGameOver(), 600);
+  if (isOnline) {
+    fbUpdateRoot(updates);
+  } else {
+    Object.assign(G, updates);
+    saveLocal();
+    refreshAll();
+    renderHist();
   }
+
+  toast('本轮计分完成');
 }
 
-function resetRound() { clearAssign(); update(); }
+function resetRound() {
+  G.currentRound = blankRound();
+  if (isOnline) {
+    fbWrite('currentRound', G.currentRound);
+  }
+  refreshAll();
+}
 
 function undoLast() {
   if (G.rounds.length === 0) return;
-  const last = G.rounds.pop();
-  for (let i = 0; i < 4; i++) G.totals[i] -= last.scores[i];
-  if (last.assign.sQ !== null) G.pigCounts[last.assign.sQ]--;
-  if (last.assign.dJ !== null) G.sheepCounts[last.assign.dJ]--;
-  if (last.assign.c10 !== null) G.transCounts[last.assign.c10]--;
-  G.roundNum--;
-  G.gameOver = false;
-  clearAssign();
-  update();
-  renderHist();
-  save();
+  const last = G.rounds[G.rounds.length - 1];
+  const newRounds = G.rounds.slice(0, -1);
+  const newTotals = G.totals.map((t, i) => t - last.scores[i]);
+  const newPig = [...G.pigCounts];
+  const newSheep = [...G.sheepCounts];
+  const newTrans = [...G.transCounts];
+  const getSafe = (a, id) => a[id] === UNASSIGNED ? null : a[id];
+  const sQ = getSafe(last.assign, 'sQ'), dJ = getSafe(last.assign, 'dJ'), c10 = getSafe(last.assign, 'c10');
+  if (sQ !== null) newPig[sQ]--;
+  if (dJ !== null) newSheep[dJ]--;
+  if (c10 !== null) newTrans[c10]--;
+
+  const updates = {
+    totals: newTotals,
+    pigCounts: newPig,
+    sheepCounts: newSheep,
+    transCounts: newTrans,
+    rounds: newRounds.length > 0 ? newRounds : [],
+    roundNum: (G.roundNum || 2) - 1,
+    gameOver: false,
+    currentRound: blankRound(),
+  };
+
+  if (isOnline) {
+    fbUpdateRoot(updates);
+  } else {
+    Object.assign(G, updates);
+    saveLocal();
+    refreshAll();
+    renderHist();
+  }
+
   toast('已撤销');
 }
 
 function deleteRound(idx) {
   if (!confirm(`删除第 ${idx+1} 轮？`)) return;
-  const r = G.rounds.splice(idx, 1)[0];
-  for (let i = 0; i < 4; i++) G.totals[i] -= r.scores[i];
-  if (r.assign.sQ !== null) G.pigCounts[r.assign.sQ]--;
-  if (r.assign.dJ !== null) G.sheepCounts[r.assign.dJ]--;
-  if (r.assign.c10 !== null) G.transCounts[r.assign.c10]--;
-  G.roundNum = G.rounds.length + 1;
-  G.gameOver = G.totals.some(t => t <= -G.targetScore);
-  update();
-  renderHist();
-  save();
+
+  const newRounds = G.rounds.filter((_, i) => i !== idx);
+  const newTotals = [0,0,0,0];
+  const newPig = [0,0,0,0];
+  const newSheep = [0,0,0,0];
+  const newTrans = [0,0,0,0];
+
+  for (const r of newRounds) {
+    for (let i = 0; i < 4; i++) newTotals[i] += r.scores[i];
+    const getSafe = (a, id) => a[id] === UNASSIGNED ? null : a[id];
+    const sQ = getSafe(r.assign, 'sQ'), dJ = getSafe(r.assign, 'dJ'), c10 = getSafe(r.assign, 'c10');
+    if (sQ !== null) newPig[sQ]++;
+    if (dJ !== null) newSheep[dJ]++;
+    if (c10 !== null) newTrans[c10]++;
+  }
+
+  const updates = {
+    totals: newTotals,
+    pigCounts: newPig,
+    sheepCounts: newSheep,
+    transCounts: newTrans,
+    rounds: newRounds.length > 0 ? newRounds : [],
+    roundNum: newRounds.length + 1,
+    gameOver: newTotals.some(t => t <= -G.targetScore),
+  };
+
+  if (isOnline) {
+    fbUpdateRoot(updates);
+  } else {
+    Object.assign(G, updates);
+    saveLocal();
+    refreshAll();
+    renderHist();
+  }
+
   toast(`已删除第 ${idx+1} 轮`);
 }
 
 /* ========== Chart ========== */
 function drawChart() {
   if (G.rounds.length === 0) return;
-
   const canvas = document.getElementById('chart-canvas');
+  if (!canvas) return;
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.parentElement.getBoundingClientRect();
   const w = rect.width - 16;
@@ -1016,7 +1332,6 @@ function drawChart() {
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, w, h);
 
-  // Build cumulative data: [round0=0, round1, round2, ...]
   const data = [0,1,2,3].map(() => [0]);
   for (const r of G.rounds) {
     for (let i = 0; i < 4; i++) data[i].push(data[i][data[i].length-1] + r.scores[i]);
@@ -1034,12 +1349,11 @@ function drawChart() {
   const x = i => pad.l + (n>1 ? i/(n-1) : 0.5) * cw;
   const y = v => pad.t + (1 - (v - minV) / (maxV - minV)) * ch;
 
-  // Grid
   ctx.strokeStyle = 'rgba(255,255,255,0.08)';
   ctx.lineWidth = 1;
   const steps = 4;
   ctx.font = '10px sans-serif';
-  ctx.fillStyle = '#8899aa';
+  ctx.fillStyle = '#706860';
   ctx.textAlign = 'right';
   for (let s = 0; s <= steps; s++) {
     const v = minV + (maxV - minV) * s / steps;
@@ -1048,14 +1362,12 @@ function drawChart() {
     ctx.fillText(Math.round(v), pad.l - 5, yy + 3);
   }
 
-  // Zero line
   if (minV < 0 && maxV > 0) {
     ctx.strokeStyle = 'rgba(255,255,255,0.15)';
     ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(pad.l, y(0)); ctx.lineTo(w - pad.r, y(0)); ctx.stroke();
   }
 
-  // Target line
   ctx.strokeStyle = 'rgba(192,112,112,0.35)';
   ctx.lineWidth = 1;
   ctx.setLineDash([4,4]);
@@ -1068,8 +1380,7 @@ function drawChart() {
   }
   ctx.setLineDash([]);
 
-  // Round labels
-  ctx.fillStyle = '#8899aa';
+  ctx.fillStyle = '#706860';
   ctx.textAlign = 'center';
   ctx.font = '9px sans-serif';
   for (let i = 0; i < n; i++) {
@@ -1078,7 +1389,6 @@ function drawChart() {
     }
   }
 
-  // Lines
   for (let p = 0; p < 4; p++) {
     ctx.strokeStyle = P_COLORS[p];
     ctx.lineWidth = 2.5;
@@ -1089,8 +1399,6 @@ function drawChart() {
       i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
     }
     ctx.stroke();
-
-    // End dot
     if (n > 1) {
       ctx.fillStyle = P_COLORS[p];
       ctx.beginPath();
@@ -1099,34 +1407,33 @@ function drawChart() {
     }
   }
 
-  // Legend
   document.getElementById('chart-legend').innerHTML = G.players.map((nm,i) =>
     `<div class="chart-legend-item"><div class="chart-legend-dot" style="background:${P_COLORS[i]}"></div>${esc(nm)}</div>`
   ).join('');
 }
 
 window.addEventListener('resize', () => {
-  if (G.rounds.length > 0 && document.getElementById('gameover-overlay').classList.contains('open')) drawChart();
+  if (G.rounds && G.rounds.length > 0 && document.getElementById('gameover-overlay').classList.contains('open')) drawChart();
 });
 
 /* ========== History ========== */
 function renderHist() {
   const body = document.getElementById('hist-body');
-  if (G.rounds.length === 0) {
+  if (!G.rounds || G.rounds.length === 0) {
     body.innerHTML = '<div style="text-align:center;color:var(--text-dim);font-size:0.8rem;padding:0.4rem">暂无记录</div>';
     return;
   }
-  body.innerHTML = G.rounds.map((r,idx) => {
+  body.innerHTML = G.rounds.map((r, idx) => {
     let tags = '';
     if (r.outcome === 'qh') tags += '<span class="hist-tag hist-tag-qh">全红</span>';
     if (r.outcome === 'zymq') tags += '<span class="hist-tag hist-tag-zymq">猪羊满圈</span>';
     return `<div class="hist-row">
       <span class="hist-label">第${idx+1}轮</span>
-      <div class="hist-scores">${r.scores.map((s,i) =>
+      <div class="hist-scores">${r.scores.map((s) =>
         `<span class="hist-s${sc(s)}">${s>0?'+':''}${s}</span>`
       ).join('')}</div>
       <div class="hist-tags">${tags}</div>
-      <button class="btn-del" onclick="deleteRound(${idx})">✕</button>
+      <button class="btn-del" onclick="window._delRound(${idx})">✕</button>
     </div>`;
   }).join('');
 }
@@ -1166,58 +1473,24 @@ function closeGameOver() {
   document.getElementById('gameover-overlay').classList.remove('open');
 }
 
-/* ========== Persistence ========== */
-function save() {
-  localStorage.setItem('gongzhu', JSON.stringify({
-    players: G.players,
-    mingEnabled: G.mingEnabled,
-    targetScore: G.targetScore,
-    totals: G.totals,
-    pigCounts: G.pigCounts,
-    sheepCounts: G.sheepCounts,
-    transCounts: G.transCounts,
-    rounds: G.rounds,
-    roundNum: G.roundNum,
-    gameOver: G.gameOver,
-  }));
+/* ========== Local Persistence (offline mode) ========== */
+function saveLocal() {
+  if (isOnline) return;
+  localStorage.setItem('gongzhu-local', JSON.stringify(G));
 }
 
-function load() {
+function loadLocal() {
   try {
-    const d = JSON.parse(localStorage.getItem('gongzhu'));
+    const d = JSON.parse(localStorage.getItem('gongzhu-local'));
     if (!d || !d.players || d.players.length !== 4) return false;
-    G.players = d.players;
-    G.mingEnabled = d.mingEnabled ?? true;
-    G.targetScore = d.targetScore ?? 1000;
-    G.totals = d.totals;
-    G.pigCounts = d.pigCounts || [0,0,0,0];
-    G.sheepCounts = d.sheepCounts || [0,0,0,0];
-    G.transCounts = d.transCounts || [0,0,0,0];
-    G.rounds = d.rounds;
-    G.roundNum = d.roundNum;
-    G.gameOver = d.gameOver || false;
-    G.selPlayer = 0;
-    clearAssign();
+    loadFromData(d);
     return true;
   } catch { return false; }
 }
 
-function newGame() {
-  if (G.rounds.length > 0 && !confirm('开始新游戏？当前记录将清除。')) return;
-  localStorage.removeItem('gongzhu');
-  showScreen('setup-screen');
-}
-
 /* ========== Helpers ========== */
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
 function sc(v) { return v > 0 ? ' spos' : v < 0 ? ' sneg' : ''; }
-
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-
 function toast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -1226,13 +1499,50 @@ function toast(msg) {
   toast._t = setTimeout(() => t.classList.remove('show'), 1800);
 }
 
+/* ========== Expose to window ========== */
+window.goCreate = goCreate;
+window.goJoin = goJoin;
+window.goLocal = goLocal;
+window.goHome = goHome;
+window.doCreate = doCreate;
+window.doJoin = doJoin;
+window.toggleMing = toggleMing;
+window._selP = _selP;
+window._tap = _tap;
+window._togExp = _togExp;
+window.confirmRound = confirmRound;
+window.resetRound = resetRound;
+window.undoLast = undoLast;
+window._delRound = deleteRound;
+window.toggleHist = toggleHist;
+window.closeGameOver = closeGameOver;
+window.leaveGame = leaveGame;
+
 /* ========== Init ========== */
-if (load()) {
-  showScreen('game-screen');
-  buildAll();
-} else {
-  showScreen('setup-screen');
+async function init() {
+  const savedRoom = localStorage.getItem('gongzhu-room');
+  if (savedRoom) {
+    try {
+      const snap = await get(ref(db, `rooms/${savedRoom}`));
+      if (snap.exists()) {
+        roomCode = savedRoom;
+        isOnline = true;
+        loadFromData(snap.val());
+        selPlayer = 0;
+        startListening();
+        enterGame();
+        return;
+      }
+    } catch (e) {
+      console.warn('Failed to reconnect to room:', e);
+    }
+    localStorage.removeItem('gongzhu-room');
+  }
+
+  goHome();
 }
+
+init();
 </script>
 </body>
 </html>
