@@ -8,20 +8,21 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #0f1923;
-  --surface: #1a2737;
-  --surface2: #223344;
-  --border: #2a3f55;
+  --bg: #000000;
+  --surface: #111111;
+  --surface2: #1a1a1a;
+  --border: #2a2a2a;
   --text: #e8edf2;
   --text-dim: #8899aa;
   --accent: #4fc3f7;
   --danger: #ef5350;
   --success: #66bb6a;
   --gold: #ffd54f;
-  --p1: #ef5350; --p1-bg: rgba(239,83,80,0.15);
-  --p2: #42a5f5; --p2-bg: rgba(66,165,245,0.15);
-  --p3: #66bb6a; --p3-bg: rgba(102,187,106,0.15);
-  --p4: #ffa726; --p4-bg: rgba(255,167,38,0.15);
+  --pname: #e8e0d4;
+  --p1: #e8e0d4; --p1-bg: rgba(232,224,212,0.08);
+  --p2: #e8e0d4; --p2-bg: rgba(232,224,212,0.08);
+  --p3: #e8e0d4; --p3-bg: rgba(232,224,212,0.08);
+  --p4: #e8e0d4; --p4-bg: rgba(232,224,212,0.08);
   --heart: #ef5350;
   --spade: #e0e0e0;
   --diamond: #ef5350;
@@ -82,10 +83,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .player-input-group { display: flex; flex-direction: column; gap: 0.3rem; }
 
 .player-input-group label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; }
-.player-input-group:nth-child(1) label { color: var(--p1); }
-.player-input-group:nth-child(2) label { color: var(--p2); }
-.player-input-group:nth-child(3) label { color: var(--p3); }
-.player-input-group:nth-child(4) label { color: var(--p4); }
+.player-input-group label { color: var(--pname); }
 
 .setup-input {
   background: var(--surface);
@@ -186,10 +184,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
 }
 
 .score-cell.selected { border-bottom-color: currentColor; }
-.score-cell[data-p="0"].selected { background: var(--p1-bg); border-bottom-color: var(--p1); }
-.score-cell[data-p="1"].selected { background: var(--p2-bg); border-bottom-color: var(--p2); }
-.score-cell[data-p="2"].selected { background: var(--p3-bg); border-bottom-color: var(--p3); }
-.score-cell[data-p="3"].selected { background: var(--p4-bg); border-bottom-color: var(--p4); }
+.score-cell.selected { background: rgba(232,224,212,0.08); border-bottom-color: var(--accent); }
 
 .score-cell .pname {
   font-size: 0.75rem;
@@ -199,10 +194,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
   text-overflow: ellipsis;
 }
 
-.score-cell[data-p="0"] .pname { color: var(--p1); }
-.score-cell[data-p="1"] .pname { color: var(--p2); }
-.score-cell[data-p="2"] .pname { color: var(--p3); }
-.score-cell[data-p="3"] .pname { color: var(--p4); }
+.score-cell .pname { color: var(--pname); }
 
 .score-cell .total { font-size: 1.3rem; font-weight: 800; font-variant-numeric: tabular-nums; }
 .score-cell .preview { font-size: 0.7rem; font-variant-numeric: tabular-nums; min-height: 1em; color: var(--text-dim); }
@@ -272,10 +264,10 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .suit-d .cs, .suit-d .cr { color: var(--diamond); }
 .suit-c .cs, .suit-c .cr { color: var(--club); }
 
-.card-btn.a0 { border-color: var(--p1); background: var(--p1-bg); }
-.card-btn.a1 { border-color: var(--p2); background: var(--p2-bg); }
-.card-btn.a2 { border-color: var(--p3); background: var(--p3-bg); }
-.card-btn.a3 { border-color: var(--p4); background: var(--p4-bg); }
+.card-btn.a0 { border-color: #ef5350; background: rgba(239,83,80,0.12); }
+.card-btn.a1 { border-color: #42a5f5; background: rgba(66,165,245,0.12); }
+.card-btn.a2 { border-color: #66bb6a; background: rgba(102,187,106,0.12); }
+.card-btn.a3 { border-color: #ffa726; background: rgba(255,167,38,0.12); }
 
 .card-btn.a0::after, .card-btn.a1::after, .card-btn.a2::after, .card-btn.a3::after {
   content: attr(data-pl);
@@ -293,10 +285,10 @@ button { cursor: pointer; border: none; font-family: inherit; }
   text-overflow: ellipsis;
 }
 
-.card-btn.a0::after { background: var(--p1); }
-.card-btn.a1::after { background: var(--p2); }
-.card-btn.a2::after { background: var(--p3); }
-.card-btn.a3::after { background: var(--p4); }
+.card-btn.a0::after { background: #ef5350; }
+.card-btn.a1::after { background: #42a5f5; }
+.card-btn.a2::after { background: #66bb6a; }
+.card-btn.a3::after { background: #ffa726; }
 
 /* Expose toggles */
 .expose-area { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; padding: 0 0.5rem; }
@@ -359,8 +351,6 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .btn-secondary { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
 
 /* Chart */
-.chart-section { padding: 0.5rem 1rem; }
-
 .chart-container {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -643,21 +633,6 @@ button { cursor: pointer; border: none; font-family: inherit; }
     <button class="btn-a btn-secondary" id="btn-undo" onclick="undoLast()" style="display:none">撤销</button>
   </div>
 
-  <div class="chart-section" id="chart-section" style="display:none">
-    <div class="chart-container">
-      <canvas id="chart-canvas" height="200"></canvas>
-      <div class="chart-legend" id="chart-legend"></div>
-    </div>
-  </div>
-
-  <div class="stats-section">
-    <div class="card-group-label" style="padding:0 0 0.3rem 0.3rem">获得猪 ♠Q</div>
-    <div class="stats-grid" id="pig-stats"></div>
-    <div class="card-group-label" style="padding:0.5rem 0 0.3rem 0.3rem">获得羊 ♦J</div>
-    <div class="stats-grid" id="sheep-stats"></div>
-    <div class="card-group-label" style="padding:0.5rem 0 0.3rem 0.3rem">获得变压器 ♣10</div>
-    <div class="stats-grid" id="trans-stats"></div>
-  </div>
 
   <div class="collapsible-section">
     <button class="collapse-toggle" id="hist-tog" onclick="toggleHist()">
@@ -676,6 +651,10 @@ button { cursor: pointer; border: none; font-family: inherit; }
   <div class="overlay-card">
     <div class="overlay-title">游戏结束</div>
     <div class="overlay-standings" id="go-standings"></div>
+    <div class="chart-container" id="go-chart-container" style="margin-top:0.5rem">
+      <canvas id="chart-canvas" height="200"></canvas>
+      <div class="chart-legend" id="chart-legend"></div>
+    </div>
     <div class="overlay-stats" id="go-stats"></div>
     <button class="btn-overlay" onclick="closeGameOver()">继续查看</button>
     <button class="btn-footer" onclick="closeGameOver();newGame();" style="align-self:center">新游戏</button>
@@ -766,9 +745,7 @@ function buildAll() {
   buildScoreboard();
   buildCards();
   buildExpose();
-  buildPigStats();
   renderHist();
-  drawChart();
   update();
 }
 
@@ -808,16 +785,6 @@ function buildExpose() {
   ).join('');
 }
 
-function buildPigStats() {
-  ['pig','sheep','trans'].forEach(type => {
-    document.getElementById(`${type}-stats`).innerHTML = G.players.map((n,i) =>
-      `<div class="stat-card">
-        <div class="stat-name" style="color:${P_COLORS[i]}">${esc(n)}</div>
-        <div class="stat-val" id="${type}-${i}">0</div>
-      </div>`
-    ).join('');
-  });
-}
 
 /* ========== Interactions ========== */
 function selP(i) {
@@ -936,12 +903,6 @@ function update() {
       pEl.className = 'preview';
     }
 
-    const pigEl = document.getElementById(`pig-${i}`);
-    if (pigEl) pigEl.textContent = G.pigCounts[i];
-    const sheepEl = document.getElementById(`sheep-${i}`);
-    if (sheepEl) sheepEl.textContent = G.sheepCounts[i];
-    const transEl = document.getElementById(`trans-${i}`);
-    if (transEl) transEl.textContent = G.transCounts[i];
   }
 
   document.querySelectorAll('.card-btn').forEach(el => {
@@ -967,7 +928,6 @@ function update() {
   document.getElementById('b-zymq').classList.toggle('on', outcome === 'zymq');
   document.getElementById('round-ind').textContent = `第 ${G.roundNum} 轮`;
   document.getElementById('btn-undo').style.display = G.rounds.length > 0 ? '' : 'none';
-  document.getElementById('chart-section').style.display = G.rounds.length > 0 ? '' : 'none';
 }
 
 /* ========== Round Management ========== */
@@ -996,7 +956,6 @@ function confirmRound() {
   clearAssign();
   update();
   renderHist();
-  drawChart();
   save();
   toast('本轮计分完成');
 
@@ -1023,7 +982,6 @@ function undoLast() {
   clearAssign();
   update();
   renderHist();
-  drawChart();
   save();
   toast('已撤销');
 }
@@ -1039,16 +997,13 @@ function deleteRound(idx) {
   G.gameOver = G.totals.some(t => t <= -G.targetScore);
   update();
   renderHist();
-  drawChart();
   save();
   toast(`已删除第 ${idx+1} 轮`);
 }
 
 /* ========== Chart ========== */
 function drawChart() {
-  const sec = document.getElementById('chart-section');
-  if (G.rounds.length === 0) { sec.style.display = 'none'; return; }
-  sec.style.display = '';
+  if (G.rounds.length === 0) return;
 
   const canvas = document.getElementById('chart-canvas');
   const dpr = window.devicePixelRatio || 1;
@@ -1153,7 +1108,9 @@ function drawChart() {
   ).join('');
 }
 
-window.addEventListener('resize', () => { if (G.rounds.length > 0) drawChart(); });
+window.addEventListener('resize', () => {
+  if (G.rounds.length > 0 && document.getElementById('gameover-overlay').classList.contains('open')) drawChart();
+});
 
 /* ========== History ========== */
 function renderHist() {
@@ -1188,7 +1145,7 @@ function showGameOver() {
   document.getElementById('go-standings').innerHTML = sorted.map((p,i) =>
     `<div class="standing-row">
       <span class="standing-rank">#${i+1}</span>
-      <span class="standing-name" style="color:${P_COLORS[p]}">${esc(G.players[p])}</span>
+      <span class="standing-name">${esc(G.players[p])}</span>
       <span class="standing-score${sc(G.totals[p])}">${G.totals[p]}</span>
     </div>`
   ).join('');
@@ -1205,6 +1162,7 @@ function showGameOver() {
   if (transKings.length > 0) statsHtml += `<div>获得变压器最多：${transKings.join('、')}（${maxTrans}次）</div>`;
   document.getElementById('go-stats').innerHTML = statsHtml;
   document.getElementById('gameover-overlay').classList.add('open');
+  setTimeout(() => drawChart(), 100);
 }
 
 function closeGameOver() {
