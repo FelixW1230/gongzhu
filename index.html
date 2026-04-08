@@ -23,9 +23,9 @@
   --p3: #66bb6a; --p3-bg: rgba(102,187,106,0.15);
   --p4: #ffa726; --p4-bg: rgba(255,167,38,0.15);
   --heart: #ef5350;
-  --spade: #b0bec5;
-  --diamond: #42a5f5;
-  --club: #66bb6a;
+  --spade: #e0e0e0;
+  --diamond: #ef5350;
+  --club: #e0e0e0;
 }
 
 body {
@@ -651,8 +651,12 @@ button { cursor: pointer; border: none; font-family: inherit; }
   </div>
 
   <div class="stats-section">
-    <div class="card-group-label" style="padding:0 0 0.3rem 0.3rem">吃猪次数</div>
+    <div class="card-group-label" style="padding:0 0 0.3rem 0.3rem">获得猪 ♠Q</div>
     <div class="stats-grid" id="pig-stats"></div>
+    <div class="card-group-label" style="padding:0.5rem 0 0.3rem 0.3rem">获得羊 ♦J</div>
+    <div class="stats-grid" id="sheep-stats"></div>
+    <div class="card-group-label" style="padding:0.5rem 0 0.3rem 0.3rem">获得变压器 ♣10</div>
+    <div class="stats-grid" id="trans-stats"></div>
   </div>
 
   <div class="collapsible-section">
@@ -721,6 +725,8 @@ let G = {
   targetScore: 2000,
   totals: [0,0,0,0],
   pigCounts: [0,0,0,0],
+  sheepCounts: [0,0,0,0],
+  transCounts: [0,0,0,0],
   rounds: [],
   assign: {},
   exposed: {},
@@ -743,6 +749,8 @@ function startGame() {
   G.targetScore = Math.abs(parseInt(document.getElementById('inp-target').value)) || 1000;
   G.totals = [0,0,0,0];
   G.pigCounts = [0,0,0,0];
+  G.sheepCounts = [0,0,0,0];
+  G.transCounts = [0,0,0,0];
   G.rounds = [];
   G.roundNum = 1;
   G.selPlayer = 0;
@@ -801,12 +809,14 @@ function buildExpose() {
 }
 
 function buildPigStats() {
-  document.getElementById('pig-stats').innerHTML = G.players.map((n,i) =>
-    `<div class="stat-card">
-      <div class="stat-name" style="color:${P_COLORS[i]}">${esc(n)}</div>
-      <div class="stat-val" id="pig-${i}">0</div>
-    </div>`
-  ).join('');
+  ['pig','sheep','trans'].forEach(type => {
+    document.getElementById(`${type}-stats`).innerHTML = G.players.map((n,i) =>
+      `<div class="stat-card">
+        <div class="stat-name" style="color:${P_COLORS[i]}">${esc(n)}</div>
+        <div class="stat-val" id="${type}-${i}">0</div>
+      </div>`
+    ).join('');
+  });
 }
 
 /* ========== Interactions ========== */
@@ -928,6 +938,10 @@ function update() {
 
     const pigEl = document.getElementById(`pig-${i}`);
     if (pigEl) pigEl.textContent = G.pigCounts[i];
+    const sheepEl = document.getElementById(`sheep-${i}`);
+    if (sheepEl) sheepEl.textContent = G.sheepCounts[i];
+    const transEl = document.getElementById(`trans-${i}`);
+    if (transEl) transEl.textContent = G.transCounts[i];
   }
 
   document.querySelectorAll('.card-btn').forEach(el => {
@@ -965,8 +979,9 @@ function confirmRound() {
   const scores = calcScores(G.assign, G.exposed);
   const outcome = detectOutcome(G.assign);
 
-  // Track pig
   if (G.assign.sQ !== null) G.pigCounts[G.assign.sQ]++;
+  if (G.assign.dJ !== null) G.sheepCounts[G.assign.dJ]++;
+  if (G.assign.c10 !== null) G.transCounts[G.assign.c10]++;
 
   G.rounds.push({
     assign: {...G.assign},
@@ -1001,6 +1016,8 @@ function undoLast() {
   const last = G.rounds.pop();
   for (let i = 0; i < 4; i++) G.totals[i] -= last.scores[i];
   if (last.assign.sQ !== null) G.pigCounts[last.assign.sQ]--;
+  if (last.assign.dJ !== null) G.sheepCounts[last.assign.dJ]--;
+  if (last.assign.c10 !== null) G.transCounts[last.assign.c10]--;
   G.roundNum--;
   G.gameOver = false;
   clearAssign();
@@ -1016,6 +1033,8 @@ function deleteRound(idx) {
   const r = G.rounds.splice(idx, 1)[0];
   for (let i = 0; i < 4; i++) G.totals[i] -= r.scores[i];
   if (r.assign.sQ !== null) G.pigCounts[r.assign.sQ]--;
+  if (r.assign.dJ !== null) G.sheepCounts[r.assign.dJ]--;
+  if (r.assign.c10 !== null) G.transCounts[r.assign.c10]--;
   G.roundNum = G.rounds.length + 1;
   G.gameOver = G.totals.some(t => t <= -G.targetScore);
   update();
@@ -1176,10 +1195,14 @@ function showGameOver() {
 
   const maxPig = Math.max(...G.pigCounts);
   const pigKings = G.pigCounts.map((c,i) => c === maxPig && maxPig > 0 ? G.players[i] : null).filter(Boolean);
+  const maxSheep = Math.max(...G.sheepCounts);
+  const sheepKings = G.sheepCounts.map((c,i) => c === maxSheep && maxSheep > 0 ? G.players[i] : null).filter(Boolean);
+  const maxTrans = Math.max(...G.transCounts);
+  const transKings = G.transCounts.map((c,i) => c === maxTrans && maxTrans > 0 ? G.players[i] : null).filter(Boolean);
   let statsHtml = `<div>共 ${G.rounds.length} 轮</div>`;
-  if (pigKings.length > 0) {
-    statsHtml += `<div>吃猪最多：${pigKings.join('、')}（${maxPig}次）</div>`;
-  }
+  if (pigKings.length > 0) statsHtml += `<div>获得猪最多：${pigKings.join('、')}（${maxPig}次）</div>`;
+  if (sheepKings.length > 0) statsHtml += `<div>获得羊最多：${sheepKings.join('、')}（${maxSheep}次）</div>`;
+  if (transKings.length > 0) statsHtml += `<div>获得变压器最多：${transKings.join('、')}（${maxTrans}次）</div>`;
   document.getElementById('go-stats').innerHTML = statsHtml;
   document.getElementById('gameover-overlay').classList.add('open');
 }
@@ -1196,6 +1219,8 @@ function save() {
     targetScore: G.targetScore,
     totals: G.totals,
     pigCounts: G.pigCounts,
+    sheepCounts: G.sheepCounts,
+    transCounts: G.transCounts,
     rounds: G.rounds,
     roundNum: G.roundNum,
     gameOver: G.gameOver,
@@ -1211,6 +1236,8 @@ function load() {
     G.targetScore = d.targetScore ?? 1000;
     G.totals = d.totals;
     G.pigCounts = d.pigCounts || [0,0,0,0];
+    G.sheepCounts = d.sheepCounts || [0,0,0,0];
+    G.transCounts = d.transCounts || [0,0,0,0];
     G.rounds = d.rounds;
     G.roundNum = d.roundNum;
     G.gameOver = d.gameOver || false;
