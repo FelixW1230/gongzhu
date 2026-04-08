@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>拱猪计分器</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0f1923;
+  --surface: #1a2737;
+  --surface2: #223344;
+  --border: #2a3f55;
+  --text: #e8edf2;
+  --text-dim: #8899aa;
+  --accent: #4fc3f7;
+  --danger: #ef5350;
+  --success: #66bb6a;
+  --gold: #ffd54f;
+  --p1: #ef5350; --p1-bg: rgba(239,83,80,0.15);
+  --p2: #42a5f5; --p2-bg: rgba(66,165,245,0.15);
+  --p3: #66bb6a; --p3-bg: rgba(102,187,106,0.15);
+  --p4: #ffa726; --p4-bg: rgba(255,167,38,0.15);
+  --heart: #ef5350;
+  --spade: #b0bec5;
+  --diamond: #42a5f5;
+  --club: #66bb6a;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button { cursor: pointer; border: none; font-family: inherit; }
+.screen { display: none; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ==================== SETUP ==================== */
+#setup-screen {
+  min-height: 100dvh;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  gap: 1.5rem;
+}
+
+.setup-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--danger), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.setup-subtitle { color: var(--text-dim); font-size: 0.9rem; }
+
+.setup-section {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.setup-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.player-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+
+.player-input-group { display: flex; flex-direction: column; gap: 0.3rem; }
+
+.player-input-group label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; }
+.player-input-group:nth-child(1) label { color: var(--p1); }
+.player-input-group:nth-child(2) label { color: var(--p2); }
+.player-input-group:nth-child(3) label { color: var(--p3); }
+.player-input-group:nth-child(4) label { color: var(--p4); }
+
+.setup-input {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.setup-input:focus { border-color: var(--accent); }
+
+.setup-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+}
+
+.setup-row-label { font-size: 0.95rem; font-weight: 600; }
+
+.toggle-track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--border);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle-track.on { background: var(--accent); }
+
+.toggle-knob {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: left 0.2s;
+}
+
+.toggle-track.on .toggle-knob { left: 22px; }
+
+.setup-score-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.setup-score-row .setup-input { flex: 1; }
+
+.btn-start {
+  background: linear-gradient(135deg, var(--danger), #d32f2f);
+  color: white;
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 0.85rem 3rem;
+  border-radius: 14px;
+  transition: transform 0.15s;
+  box-shadow: 0 4px 15px rgba(239,83,80,0.3);
+  margin-top: 0.5rem;
+}
+
+.btn-start:active { transform: scale(0.96); }
+
+/* ==================== GAME ==================== */
+#game-screen { min-height: 100dvh; padding-bottom: 2rem; }
+
+/* Scoreboard */
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.score-cell {
+  text-align: center;
+  padding: 0.5rem 0.2rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 3px solid transparent;
+  user-select: none;
+}
+
+.score-cell.selected { border-bottom-color: currentColor; }
+.score-cell[data-p="0"].selected { background: var(--p1-bg); border-bottom-color: var(--p1); }
+.score-cell[data-p="1"].selected { background: var(--p2-bg); border-bottom-color: var(--p2); }
+.score-cell[data-p="2"].selected { background: var(--p3-bg); border-bottom-color: var(--p3); }
+.score-cell[data-p="3"].selected { background: var(--p4-bg); border-bottom-color: var(--p4); }
+
+.score-cell .pname {
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.score-cell[data-p="0"] .pname { color: var(--p1); }
+.score-cell[data-p="1"] .pname { color: var(--p2); }
+.score-cell[data-p="2"] .pname { color: var(--p3); }
+.score-cell[data-p="3"] .pname { color: var(--p4); }
+
+.score-cell .total { font-size: 1.3rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.score-cell .preview { font-size: 0.7rem; font-variant-numeric: tabular-nums; min-height: 1em; color: var(--text-dim); }
+.spos { color: var(--success) !important; }
+.sneg { color: var(--danger) !important; }
+
+/* Instruction */
+.instruction {
+  text-align: center;
+  padding: 0.55rem 1rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.instruction strong { color: var(--accent); }
+
+.round-indicator {
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Cards */
+.card-area { padding: 0.5rem; display: flex; flex-direction: column; gap: 0.6rem; }
+
+.card-group-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.card-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; }
+
+.card-btn {
+  position: relative;
+  width: 50px;
+  height: 68px;
+  border-radius: 7px;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s;
+  user-select: none;
+}
+
+.card-btn:active { transform: scale(0.92); }
+.card-btn .cs { font-size: 0.9rem; line-height: 1; }
+.card-btn .cr { font-size: 1rem; font-weight: 800; line-height: 1.1; }
+.card-btn .cv { font-size: 0.5rem; color: var(--text-dim); font-weight: 600; position: absolute; bottom: 2px; }
+
+.card-btn.no-value .cv { display: none; }
+
+.suit-h .cs, .suit-h .cr { color: var(--heart); }
+.suit-s .cs, .suit-s .cr { color: var(--spade); }
+.suit-d .cs, .suit-d .cr { color: var(--diamond); }
+.suit-c .cs, .suit-c .cr { color: var(--club); }
+
+.card-btn.a0 { border-color: var(--p1); background: var(--p1-bg); }
+.card-btn.a1 { border-color: var(--p2); background: var(--p2-bg); }
+.card-btn.a2 { border-color: var(--p3); background: var(--p3-bg); }
+.card-btn.a3 { border-color: var(--p4); background: var(--p4-bg); }
+
+.card-btn.a0::after, .card-btn.a1::after, .card-btn.a2::after, .card-btn.a3::after {
+  content: attr(data-pl);
+  position: absolute;
+  top: -7px;
+  right: -5px;
+  font-size: 0.5rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 5px;
+  color: white;
+  white-space: nowrap;
+  max-width: 36px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-btn.a0::after { background: var(--p1); }
+.card-btn.a1::after { background: var(--p2); }
+.card-btn.a2::after { background: var(--p3); }
+.card-btn.a3::after { background: var(--p4); }
+
+/* Expose toggles */
+.expose-area { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; padding: 0 0.5rem; }
+
+.expose-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 7px;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.12s;
+  user-select: none;
+}
+
+.expose-btn.active { border-color: var(--gold); background: rgba(255,213,79,0.12); color: var(--gold); }
+.expose-btn .el { font-weight: 800; font-size: 0.8rem; }
+
+/* Badges */
+.badges { display: flex; gap: 0.4rem; justify-content: center; padding: 0.3rem; flex-wrap: wrap; min-height: 1.6rem; }
+
+.badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 5px;
+  display: none;
+}
+
+.badge.on { display: inline-block; }
+.badge-qh { background: rgba(239,83,80,0.15); color: var(--danger); border: 1px solid rgba(239,83,80,0.3); }
+.badge-zymq { background: rgba(255,213,79,0.15); color: var(--gold); border: 1px solid rgba(255,213,79,0.3); }
+
+/* Actions */
+.actions { display: flex; gap: 0.5rem; padding: 0.5rem 1rem; justify-content: center; flex-wrap: wrap; }
+
+.btn-a {
+  padding: 0.65rem 1.2rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: all 0.12s;
+}
+
+.btn-a:active { transform: scale(0.96); }
+
+.btn-confirm {
+  background: linear-gradient(135deg, var(--success), #43a047);
+  color: white;
+  box-shadow: 0 3px 10px rgba(102,187,106,0.2);
+  flex: 1;
+  max-width: 180px;
+}
+
+.btn-confirm:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; }
+.btn-secondary { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
+
+/* Chart */
+.chart-section { padding: 0.5rem 1rem; }
+
+.chart-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.5rem;
+  position: relative;
+}
+
+.chart-container canvas { width: 100%; height: 200px; display: block; }
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: 0.3rem 0;
+  flex-wrap: wrap;
+}
+
+.chart-legend-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.7rem; font-weight: 600; }
+.chart-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* Stats */
+.stats-section { padding: 0 1rem; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.stat-card .stat-name {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-card .stat-val { font-size: 1.3rem; font-weight: 800; }
+
+/* History */
+.collapsible-section { padding: 0 1rem; margin-top: 0.5rem; }
+
+.collapse-toggle {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.collapse-toggle .arr { transition: transform 0.2s; font-size: 0.7rem; }
+.collapse-toggle.open .arr { transform: rotate(180deg); }
+
+.collapse-body { display: none; flex-direction: column; gap: 0.3rem; margin-top: 0.4rem; }
+.collapse-body.open { display: flex; }
+
+.hist-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 0.5rem 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.hist-label { font-size: 0.75rem; font-weight: 700; color: var(--text-dim); min-width: 42px; }
+
+.hist-scores { display: flex; flex: 1; justify-content: space-around; }
+.hist-s { font-size: 0.8rem; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 40px; text-align: center; }
+
+.hist-tags { display: flex; gap: 0.2rem; }
+.hist-tag { font-size: 0.55rem; font-weight: 700; padding: 1px 4px; border-radius: 3px; }
+.hist-tag-qh { background: rgba(239,83,80,0.2); color: var(--danger); }
+.hist-tag-zymq { background: rgba(255,213,79,0.2); color: var(--gold); }
+
+.hist-row .btn-del {
+  background: none;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  opacity: 0.4;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.hist-row .btn-del:hover, .hist-row .btn-del:active { opacity: 1; color: var(--danger); }
+
+/* Footer */
+.footer { display: flex; justify-content: center; padding: 1rem; gap: 0.6rem; }
+
+.btn-footer {
+  background: var(--surface2);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Game Over Overlay */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.overlay.open { display: flex; }
+
+.overlay-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 90dvh;
+  overflow-y: auto;
+}
+
+.overlay-title { font-size: 1.5rem; font-weight: 800; color: var(--gold); }
+
+.overlay-standings { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.standing-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.8rem;
+  background: var(--surface2);
+  border-radius: 8px;
+}
+
+.standing-rank { font-size: 0.8rem; font-weight: 800; color: var(--text-dim); width: 24px; }
+.standing-name { font-size: 1rem; font-weight: 700; flex: 1; text-align: left; margin-left: 0.3rem; }
+.standing-score { font-size: 1.1rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+.standing-row:first-child { border: 1px solid var(--gold); }
+.standing-row:first-child .standing-rank { color: var(--gold); }
+
+.overlay-stats { font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; }
+
+.btn-overlay {
+  background: linear-gradient(135deg, var(--accent), #0288d1);
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.75rem 2rem;
+  border-radius: 12px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  z-index: 300;
+  transition: transform 0.3s ease;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  white-space: nowrap;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Responsive */
+@media (min-width: 480px) {
+  .card-btn { width: 56px; height: 74px; }
+  .card-btn .cr { font-size: 1.1rem; }
+}
+
+@media (min-width: 700px) {
+  .card-area, .actions, .chart-section, .stats-section, .collapsible-section, .footer {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== SETUP ===== -->
+<div id="setup-screen" class="screen active">
+  <div class="setup-title">拱猪计分器</div>
+  <div class="setup-subtitle">设置游戏参数</div>
+
+  <div class="setup-section">
+    <div class="setup-section-title">玩家名字</div>
+    <div class="player-inputs">
+      <div class="player-input-group"><label>玩家 1</label><input class="setup-input" id="inp-n0" placeholder="东" maxlength="6"></div>
+      <div class="player-input-group"><label>玩家 2</label><input class="setup-input" id="inp-n1" placeholder="南" maxlength="6"></div>
+      <div class="player-input-group"><label>玩家 3</label><input class="setup-input" id="inp-n2" placeholder="西" maxlength="6"></div>
+      <div class="player-input-group"><label>玩家 4</label><input class="setup-input" id="inp-n3" placeholder="北" maxlength="6"></div>
+    </div>
+  </div>
+
+  <div class="setup-section">
+    <div class="setup-section-title">规则设置</div>
+    <div class="setup-row">
+      <span class="setup-row-label">允许明牌</span>
+      <div class="toggle-track on" id="tog-ming" onclick="toggleSetupMing()">
+        <div class="toggle-knob"></div>
+      </div>
+    </div>
+    <div class="setup-row">
+      <span class="setup-row-label">结束分数</span>
+      <input class="setup-input" id="inp-target" type="number" value="2000" min="100" step="100" style="width:100px;text-align:center;margin-left:auto">
+    </div>
+  </div>
+
+  <button class="btn-start" onclick="startGame()">开始计分</button>
+</div>
+
+<!-- ===== GAME ===== -->
+<div id="game-screen" class="screen">
+  <div class="scoreboard" id="scoreboard"></div>
+
+  <div class="instruction">
+    选中 <strong>玩家</strong>，再点 <strong>牌</strong> 进行分配
+  </div>
+
+  <div class="round-indicator" id="round-ind">第 1 轮</div>
+
+  <div class="card-area">
+    <div class="card-group-label"><span style="color:var(--heart)">♥</span> 红心</div>
+    <div class="card-grid" id="grid-hearts"></div>
+
+    <div class="card-group-label" style="margin-top:0.2rem">特殊牌</div>
+    <div class="card-grid" id="grid-specials"></div>
+
+    <div id="expose-section" style="margin-top:0.2rem">
+      <div class="card-group-label">亮牌（明）<span style="font-weight:400;font-size:0.65rem;color:var(--text-dim);margin-left:0.3rem">翻倍效果</span></div>
+      <div class="expose-area" id="expose-area"></div>
+    </div>
+  </div>
+
+  <div class="badges">
+    <span class="badge badge-qh" id="b-qh">全红！红心翻正</span>
+    <span class="badge badge-zymq" id="b-zymq">猪羊满圈！</span>
+  </div>
+
+  <div class="actions">
+    <button class="btn-a btn-secondary" onclick="resetRound()">清空</button>
+    <button class="btn-a btn-confirm" id="btn-ok" onclick="confirmRound()">确认本轮</button>
+    <button class="btn-a btn-secondary" id="btn-undo" onclick="undoLast()" style="display:none">撤销</button>
+  </div>
+
+  <div class="chart-section" id="chart-section" style="display:none">
+    <div class="chart-container">
+      <canvas id="chart-canvas" height="200"></canvas>
+      <div class="chart-legend" id="chart-legend"></div>
+    </div>
+  </div>
+
+  <div class="stats-section">
+    <div class="card-group-label" style="padding:0 0 0.3rem 0.3rem">吃猪次数</div>
+    <div class="stats-grid" id="pig-stats"></div>
+  </div>
+
+  <div class="collapsible-section">
+    <button class="collapse-toggle" id="hist-tog" onclick="toggleHist()">
+      <span>历史记录</span><span class="arr">▼</span>
+    </button>
+    <div class="collapse-body" id="hist-body"></div>
+  </div>
+
+  <div class="footer">
+    <button class="btn-footer" onclick="newGame()">新游戏</button>
+  </div>
+</div>
+
+<!-- Game Over -->
+<div class="overlay" id="gameover-overlay">
+  <div class="overlay-card">
+    <div class="overlay-title">游戏结束</div>
+    <div class="overlay-standings" id="go-standings"></div>
+    <div class="overlay-stats" id="go-stats"></div>
+    <button class="btn-overlay" onclick="closeGameOver()">继续查看</button>
+    <button class="btn-footer" onclick="closeGameOver();newGame();" style="align-self:center">新游戏</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const P_COLORS = ['#ef5350','#42a5f5','#66bb6a','#ffa726'];
+const DEFAULTS = ['东','南','西','北'];
+
+const HEARTS = [
+  {id:'hA',  rank:'A',  val:-50},
+  {id:'hK',  rank:'K',  val:-40},
+  {id:'hQ',  rank:'Q',  val:-30},
+  {id:'hJ',  rank:'J',  val:-20},
+  {id:'h10', rank:'10', val:-10},
+  {id:'h9',  rank:'9',  val:-10},
+  {id:'h8',  rank:'8',  val:-10},
+  {id:'h7',  rank:'7',  val:-10},
+  {id:'h6',  rank:'6',  val:-10},
+  {id:'h5',  rank:'5',  val:-10},
+  {id:'h4',  rank:'4',  val:0},
+  {id:'h3',  rank:'3',  val:0},
+  {id:'h2',  rank:'2',  val:0},
+];
+
+const SPECIALS = [
+  {id:'sQ',  suit:'♠', rank:'Q',  suitCls:'suit-s', label:'猪',   baseVal:-100},
+  {id:'dJ',  suit:'♦', rank:'J',  suitCls:'suit-d', label:'羊',   baseVal:+100},
+  {id:'c10', suit:'♣', rank:'10', suitCls:'suit-c', label:'变压器', baseVal:0},
+];
+
+const EXPOSE_DEF = [
+  {id:'hA',  label:'♥A'},
+  {id:'sQ',  label:'♠Q 猪'},
+  {id:'dJ',  label:'♦J 羊'},
+  {id:'c10', label:'♣10 变压器'},
+];
+
+const ALL_CARD_IDS = HEARTS.map(c=>c.id).concat(SPECIALS.map(c=>c.id));
+
+let G = {
+  players: [],
+  mingEnabled: true,
+  targetScore: 2000,
+  totals: [0,0,0,0],
+  pigCounts: [0,0,0,0],
+  rounds: [],
+  assign: {},
+  exposed: {},
+  selPlayer: 0,
+  roundNum: 1,
+  gameOver: false,
+};
+
+/* ========== Setup ========== */
+function toggleSetupMing() {
+  const el = document.getElementById('tog-ming');
+  const on = !el.classList.contains('on');
+  el.classList.toggle('on', on);
+  document.getElementById('inp-target').value = on ? 2000 : 1000;
+}
+
+function startGame() {
+  G.players = [0,1,2,3].map(i => document.getElementById(`inp-n${i}`).value.trim() || DEFAULTS[i]);
+  G.mingEnabled = document.getElementById('tog-ming').classList.contains('on');
+  G.targetScore = Math.abs(parseInt(document.getElementById('inp-target').value)) || 1000;
+  G.totals = [0,0,0,0];
+  G.pigCounts = [0,0,0,0];
+  G.rounds = [];
+  G.roundNum = 1;
+  G.selPlayer = 0;
+  G.gameOver = false;
+  clearAssign();
+  showScreen('game-screen');
+  buildAll();
+  save();
+}
+
+/* ========== Build UI ========== */
+function buildAll() {
+  buildScoreboard();
+  buildCards();
+  buildExpose();
+  buildPigStats();
+  renderHist();
+  drawChart();
+  update();
+}
+
+function buildScoreboard() {
+  document.getElementById('scoreboard').innerHTML = G.players.map((n,i) =>
+    `<div class="score-cell${i===0?' selected':''}" data-p="${i}" onclick="selP(${i})">
+      <div class="pname">${esc(n)}</div>
+      <div class="total" id="tot-${i}">0</div>
+      <div class="preview" id="pre-${i}"></div>
+    </div>`
+  ).join('');
+}
+
+function buildCards() {
+  document.getElementById('grid-hearts').innerHTML = HEARTS.map(c =>
+    `<button class="card-btn suit-h${c.val===0?' no-value':''}" data-c="${c.id}" onclick="tap('${c.id}')">
+      <span class="cs">♥</span><span class="cr">${c.rank}</span><span class="cv">${c.val}</span>
+    </button>`
+  ).join('');
+
+  document.getElementById('grid-specials').innerHTML = SPECIALS.map(c =>
+    `<button class="card-btn ${c.suitCls}" data-c="${c.id}" onclick="tap('${c.id}')">
+      <span class="cs">${c.suit}</span><span class="cr">${c.rank}</span>
+      <span class="cv">${c.id==='c10'?'×2':((c.baseVal>0?'+':'')+c.baseVal)}</span>
+    </button>`
+  ).join('');
+}
+
+function buildExpose() {
+  const sec = document.getElementById('expose-section');
+  if (!G.mingEnabled) { sec.style.display = 'none'; return; }
+  sec.style.display = '';
+  document.getElementById('expose-area').innerHTML = EXPOSE_DEF.map(e =>
+    `<button class="expose-btn" data-e="${e.id}" onclick="togExp('${e.id}')">
+      <span class="el">明</span> ${e.label}
+    </button>`
+  ).join('');
+}
+
+function buildPigStats() {
+  document.getElementById('pig-stats').innerHTML = G.players.map((n,i) =>
+    `<div class="stat-card">
+      <div class="stat-name" style="color:${P_COLORS[i]}">${esc(n)}</div>
+      <div class="stat-val" id="pig-${i}">0</div>
+    </div>`
+  ).join('');
+}
+
+/* ========== Interactions ========== */
+function selP(i) {
+  G.selPlayer = i;
+  document.querySelectorAll('.score-cell').forEach((el,j) => el.classList.toggle('selected', j===i));
+}
+
+function tap(id) {
+  G.assign[id] = G.assign[id] === G.selPlayer ? null : G.selPlayer;
+  update();
+}
+
+function togExp(id) {
+  G.exposed[id] = !G.exposed[id];
+  update();
+}
+
+function clearAssign() {
+  G.assign = {};
+  G.exposed = {};
+  ALL_CARD_IDS.forEach(id => G.assign[id] = null);
+  EXPOSE_DEF.forEach(e => G.exposed[e.id] = false);
+}
+
+/* ========== Scoring Engine ========== */
+function calcScores(assign, exposed) {
+  const scores = [0,0,0,0];
+  const heartIds = HEARTS.map(c => c.id);
+
+  // Check special outcomes
+  const assignedAll = ALL_CARD_IDS.every(id => assign[id] !== null);
+  const onePlayerAll = assignedAll && new Set(ALL_CARD_IDS.map(id => assign[id])).size === 1;
+  const heartsAssigned = heartIds.filter(id => assign[id] !== null);
+  const allHearts = heartsAssigned.length === HEARTS.length;
+  const onePlayerHearts = allHearts && new Set(heartsAssigned.map(id => assign[id])).size === 1;
+
+  const heartMult = exposed.hA ? 2 : 1;
+  const pigMult = exposed.sQ ? 2 : 1;
+  const sheepMult = exposed.dJ ? 2 : 1;
+  const transMult = exposed.c10 ? 4 : 2;
+
+  if (onePlayerAll) {
+    // 猪羊满圈
+    const p = assign[ALL_CARD_IDS[0]];
+    let negSum = 0;
+    for (const c of HEARTS) {
+      if (c.val < 0) negSum += c.val * heartMult;
+    }
+    negSum += -100 * pigMult;
+    const flipped = -negSum;
+    const withSheep = flipped + 100 * sheepMult;
+    scores[p] = withSheep * transMult;
+    return scores;
+  }
+
+  // Heart scoring
+  const isQuanHong = onePlayerHearts;
+  for (const c of HEARTS) {
+    const p = assign[c.id];
+    if (p === null) continue;
+    let v = c.val * heartMult;
+    if (isQuanHong) v = -v;
+    scores[p] += v;
+  }
+
+  // Pig
+  const pigP = assign.sQ;
+  if (pigP !== null) scores[pigP] += -100 * pigMult;
+
+  // Sheep
+  const sheepP = assign.dJ;
+  if (sheepP !== null) scores[sheepP] += 100 * sheepMult;
+
+  // Transformer: +50 only if player has NO other scoring cards, otherwise multiply
+  const transP = assign.c10;
+  if (transP !== null) {
+    const hasOtherCards = ALL_CARD_IDS.some(id => id !== 'c10' && assign[id] === transP);
+    if (!hasOtherCards) {
+      scores[transP] = 50 * (exposed.c10 ? 2 : 1);
+    } else {
+      scores[transP] *= transMult;
+    }
+  }
+
+  return scores;
+}
+
+function detectOutcome(assign) {
+  const heartIds = HEARTS.map(c => c.id);
+  const assignedAll = ALL_CARD_IDS.every(id => assign[id] !== null);
+  const onePlayerAll = assignedAll && new Set(ALL_CARD_IDS.map(id => assign[id])).size === 1;
+  if (onePlayerAll) return 'zymq';
+
+  const ha = heartIds.filter(id => assign[id] !== null);
+  if (ha.length === HEARTS.length && new Set(ha.map(id => assign[id])).size === 1) return 'qh';
+
+  return null;
+}
+
+/* ========== Update UI ========== */
+function update() {
+  const scores = calcScores(G.assign, G.exposed);
+  const any = Object.values(G.assign).some(v => v !== null);
+
+  for (let i = 0; i < 4; i++) {
+    const tEl = document.getElementById(`tot-${i}`);
+    const pEl = document.getElementById(`pre-${i}`);
+    tEl.textContent = G.totals[i];
+    tEl.className = 'total' + sc(G.totals[i]);
+
+    if (any) {
+      pEl.textContent = (scores[i]>0?'+':'') + scores[i];
+      pEl.className = 'preview' + sc(scores[i]);
+    } else {
+      pEl.textContent = '';
+      pEl.className = 'preview';
+    }
+
+    const pigEl = document.getElementById(`pig-${i}`);
+    if (pigEl) pigEl.textContent = G.pigCounts[i];
+  }
+
+  document.querySelectorAll('.card-btn').forEach(el => {
+    const id = el.dataset.c;
+    const p = G.assign[id];
+    el.classList.remove('a0','a1','a2','a3');
+    if (p !== null && p !== undefined) {
+      el.classList.add('a'+p);
+      el.dataset.pl = G.players[p];
+    } else {
+      el.dataset.pl = '';
+    }
+  });
+
+  if (G.mingEnabled) {
+    document.querySelectorAll('.expose-btn').forEach(el => {
+      el.classList.toggle('active', !!G.exposed[el.dataset.e]);
+    });
+  }
+
+  const outcome = detectOutcome(G.assign);
+  document.getElementById('b-qh').classList.toggle('on', outcome === 'qh');
+  document.getElementById('b-zymq').classList.toggle('on', outcome === 'zymq');
+  document.getElementById('round-ind').textContent = `第 ${G.roundNum} 轮`;
+  document.getElementById('btn-undo').style.display = G.rounds.length > 0 ? '' : 'none';
+  document.getElementById('chart-section').style.display = G.rounds.length > 0 ? '' : 'none';
+}
+
+/* ========== Round Management ========== */
+function confirmRound() {
+  if (G.gameOver) return;
+  const any = Object.values(G.assign).some(v => v !== null);
+  if (!any) { toast('请先分配至少一张牌'); return; }
+
+  const scores = calcScores(G.assign, G.exposed);
+  const outcome = detectOutcome(G.assign);
+
+  // Track pig
+  if (G.assign.sQ !== null) G.pigCounts[G.assign.sQ]++;
+
+  G.rounds.push({
+    assign: {...G.assign},
+    exposed: {...G.exposed},
+    scores: [...scores],
+    outcome,
+  });
+
+  for (let i = 0; i < 4; i++) G.totals[i] += scores[i];
+
+  G.roundNum++;
+  clearAssign();
+  update();
+  renderHist();
+  drawChart();
+  save();
+  toast('本轮计分完成');
+
+  // Check game over
+  const loser = G.totals.findIndex(t => t <= -G.targetScore);
+  if (loser !== -1) {
+    G.gameOver = true;
+    save();
+    setTimeout(() => showGameOver(), 600);
+  }
+}
+
+function resetRound() { clearAssign(); update(); }
+
+function undoLast() {
+  if (G.rounds.length === 0) return;
+  const last = G.rounds.pop();
+  for (let i = 0; i < 4; i++) G.totals[i] -= last.scores[i];
+  if (last.assign.sQ !== null) G.pigCounts[last.assign.sQ]--;
+  G.roundNum--;
+  G.gameOver = false;
+  clearAssign();
+  update();
+  renderHist();
+  drawChart();
+  save();
+  toast('已撤销');
+}
+
+function deleteRound(idx) {
+  if (!confirm(`删除第 ${idx+1} 轮？`)) return;
+  const r = G.rounds.splice(idx, 1)[0];
+  for (let i = 0; i < 4; i++) G.totals[i] -= r.scores[i];
+  if (r.assign.sQ !== null) G.pigCounts[r.assign.sQ]--;
+  G.roundNum = G.rounds.length + 1;
+  G.gameOver = G.totals.some(t => t <= -G.targetScore);
+  update();
+  renderHist();
+  drawChart();
+  save();
+  toast(`已删除第 ${idx+1} 轮`);
+}
+
+/* ========== Chart ========== */
+function drawChart() {
+  const sec = document.getElementById('chart-section');
+  if (G.rounds.length === 0) { sec.style.display = 'none'; return; }
+  sec.style.display = '';
+
+  const canvas = document.getElementById('chart-canvas');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const w = rect.width - 16;
+  const h = 200;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  // Build cumulative data: [round0=0, round1, round2, ...]
+  const data = [0,1,2,3].map(() => [0]);
+  for (const r of G.rounds) {
+    for (let i = 0; i < 4; i++) data[i].push(data[i][data[i].length-1] + r.scores[i]);
+  }
+
+  const allVals = data.flat();
+  let minV = Math.min(...allVals, 0);
+  let maxV = Math.max(...allVals, 0);
+  if (minV === maxV) { minV -= 100; maxV += 100; }
+  const pad = {t:15, b:25, l:45, r:10};
+  const cw = w - pad.l - pad.r;
+  const ch = h - pad.t - pad.b;
+  const n = data[0].length;
+
+  const x = i => pad.l + (n>1 ? i/(n-1) : 0.5) * cw;
+  const y = v => pad.t + (1 - (v - minV) / (maxV - minV)) * ch;
+
+  // Grid
+  ctx.strokeStyle = 'rgba(42,63,85,0.6)';
+  ctx.lineWidth = 1;
+  const steps = 4;
+  ctx.font = '10px sans-serif';
+  ctx.fillStyle = '#8899aa';
+  ctx.textAlign = 'right';
+  for (let s = 0; s <= steps; s++) {
+    const v = minV + (maxV - minV) * s / steps;
+    const yy = y(v);
+    ctx.beginPath(); ctx.moveTo(pad.l, yy); ctx.lineTo(w - pad.r, yy); ctx.stroke();
+    ctx.fillText(Math.round(v), pad.l - 5, yy + 3);
+  }
+
+  // Zero line
+  if (minV < 0 && maxV > 0) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(pad.l, y(0)); ctx.lineTo(w - pad.r, y(0)); ctx.stroke();
+  }
+
+  // Target line
+  ctx.strokeStyle = 'rgba(239,83,80,0.35)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4,4]);
+  const ty = y(-G.targetScore);
+  if (ty >= pad.t && ty <= h - pad.b) {
+    ctx.beginPath(); ctx.moveTo(pad.l, ty); ctx.lineTo(w - pad.r, ty); ctx.stroke();
+    ctx.fillStyle = 'rgba(239,83,80,0.6)';
+    ctx.textAlign = 'left';
+    ctx.fillText(`-${G.targetScore}`, pad.l + 2, ty - 4);
+  }
+  ctx.setLineDash([]);
+
+  // Round labels
+  ctx.fillStyle = '#8899aa';
+  ctx.textAlign = 'center';
+  ctx.font = '9px sans-serif';
+  for (let i = 0; i < n; i++) {
+    if (n <= 20 || i % Math.ceil(n/10) === 0 || i === n-1) {
+      ctx.fillText(i === 0 ? '0' : i, x(i), h - pad.b + 14);
+    }
+  }
+
+  // Lines
+  for (let p = 0; p < 4; p++) {
+    ctx.strokeStyle = P_COLORS[p];
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const px = x(i), py = y(data[p][i]);
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    // End dot
+    if (n > 1) {
+      ctx.fillStyle = P_COLORS[p];
+      ctx.beginPath();
+      ctx.arc(x(n-1), y(data[p][n-1]), 3.5, 0, Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  // Legend
+  document.getElementById('chart-legend').innerHTML = G.players.map((nm,i) =>
+    `<div class="chart-legend-item"><div class="chart-legend-dot" style="background:${P_COLORS[i]}"></div>${esc(nm)}</div>`
+  ).join('');
+}
+
+window.addEventListener('resize', () => { if (G.rounds.length > 0) drawChart(); });
+
+/* ========== History ========== */
+function renderHist() {
+  const body = document.getElementById('hist-body');
+  if (G.rounds.length === 0) {
+    body.innerHTML = '<div style="text-align:center;color:var(--text-dim);font-size:0.8rem;padding:0.4rem">暂无记录</div>';
+    return;
+  }
+  body.innerHTML = G.rounds.map((r,idx) => {
+    let tags = '';
+    if (r.outcome === 'qh') tags += '<span class="hist-tag hist-tag-qh">全红</span>';
+    if (r.outcome === 'zymq') tags += '<span class="hist-tag hist-tag-zymq">猪羊满圈</span>';
+    return `<div class="hist-row">
+      <span class="hist-label">第${idx+1}轮</span>
+      <div class="hist-scores">${r.scores.map((s,i) =>
+        `<span class="hist-s${sc(s)}">${s>0?'+':''}${s}</span>`
+      ).join('')}</div>
+      <div class="hist-tags">${tags}</div>
+      <button class="btn-del" onclick="deleteRound(${idx})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function toggleHist() {
+  document.getElementById('hist-tog').classList.toggle('open');
+  document.getElementById('hist-body').classList.toggle('open');
+}
+
+/* ========== Game Over ========== */
+function showGameOver() {
+  const sorted = [0,1,2,3].sort((a,b) => G.totals[b] - G.totals[a]);
+  document.getElementById('go-standings').innerHTML = sorted.map((p,i) =>
+    `<div class="standing-row">
+      <span class="standing-rank">#${i+1}</span>
+      <span class="standing-name" style="color:${P_COLORS[p]}">${esc(G.players[p])}</span>
+      <span class="standing-score${sc(G.totals[p])}">${G.totals[p]}</span>
+    </div>`
+  ).join('');
+
+  const maxPig = Math.max(...G.pigCounts);
+  const pigKings = G.pigCounts.map((c,i) => c === maxPig && maxPig > 0 ? G.players[i] : null).filter(Boolean);
+  let statsHtml = `<div>共 ${G.rounds.length} 轮</div>`;
+  if (pigKings.length > 0) {
+    statsHtml += `<div>吃猪最多：${pigKings.join('、')}（${maxPig}次）</div>`;
+  }
+  document.getElementById('go-stats').innerHTML = statsHtml;
+  document.getElementById('gameover-overlay').classList.add('open');
+}
+
+function closeGameOver() {
+  document.getElementById('gameover-overlay').classList.remove('open');
+}
+
+/* ========== Persistence ========== */
+function save() {
+  localStorage.setItem('gongzhu', JSON.stringify({
+    players: G.players,
+    mingEnabled: G.mingEnabled,
+    targetScore: G.targetScore,
+    totals: G.totals,
+    pigCounts: G.pigCounts,
+    rounds: G.rounds,
+    roundNum: G.roundNum,
+    gameOver: G.gameOver,
+  }));
+}
+
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem('gongzhu'));
+    if (!d || !d.players || d.players.length !== 4) return false;
+    G.players = d.players;
+    G.mingEnabled = d.mingEnabled ?? true;
+    G.targetScore = d.targetScore ?? 1000;
+    G.totals = d.totals;
+    G.pigCounts = d.pigCounts || [0,0,0,0];
+    G.rounds = d.rounds;
+    G.roundNum = d.roundNum;
+    G.gameOver = d.gameOver || false;
+    G.selPlayer = 0;
+    clearAssign();
+    return true;
+  } catch { return false; }
+}
+
+function newGame() {
+  if (G.rounds.length > 0 && !confirm('开始新游戏？当前记录将清除。')) return;
+  localStorage.removeItem('gongzhu');
+  showScreen('setup-screen');
+}
+
+/* ========== Helpers ========== */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function sc(v) { return v > 0 ? ' spos' : v < 0 ? ' sneg' : ''; }
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+/* ========== Init ========== */
+if (load()) {
+  showScreen('game-screen');
+  buildAll();
+} else {
+  showScreen('setup-screen');
+}
+</script>
+</body>
+</html>
